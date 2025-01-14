@@ -93,7 +93,7 @@ public class Constants {
         public static final class FrontLeftModule {
             public static final int driveMotorID = 7;
             public static final int rotationMotorID = 8;
-            public static final int canCoderID = 13;
+            public static final int canCoderID = 14;
             public static final boolean driveInvert = false;
             public static final boolean rotationInvert = false;
             public static final boolean canCoderInvert = false;
@@ -104,7 +104,7 @@ public class Constants {
         public static final class FrontRightModule {
             public static final int driveMotorID = 6;
             public static final int rotationMotorID = 5;
-            public static final int canCoderID = 23;
+            public static final int canCoderID = 13;
             public static final boolean driveInvert = false;
             public static final boolean rotationInvert = false;
             public static final boolean canCoderInvert = false;
@@ -115,7 +115,7 @@ public class Constants {
         public static final class BackLeftModule {
             public static final int driveMotorID = 1;
             public static final int rotationMotorID = 2;
-            public static final int canCoderID = 33;
+            public static final int canCoderID = 11;
             public static final boolean driveInvert = false;
             public static final boolean rotationInvert = false;
             public static final boolean canCoderInvert = false;
@@ -126,7 +126,7 @@ public class Constants {
         public static final class BackRightModule {
             public static final int driveMotorID = 4;
             public static final int rotationMotorID = 3;
-            public static final int canCoderID = 43;
+            public static final int canCoderID = 12;
             public static final boolean driveInvert = false;
             public static final boolean rotationInvert = false;
             public static final boolean canCoderInvert = false;

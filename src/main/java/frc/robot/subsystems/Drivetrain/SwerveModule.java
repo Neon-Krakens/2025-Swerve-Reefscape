@@ -65,9 +65,8 @@ public class SwerveModule {
         // }
 
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
-        desiredState.angle = new Rotation2d(3.142);
         setAngle(desiredState);
-        // setSpeed(desiredState, isOpenLoop);
+        setSpeed(desiredState, isOpenLoop);
     }
 
     private void resetToAbsolute() {
