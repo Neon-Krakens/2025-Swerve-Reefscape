@@ -91,8 +91,8 @@ public class Constants {
 
         // Front Left Module - Module 0
         public static final class FrontLeftModule {
-            public static final int driveMotorID = 1;
-            public static final int rotationMotorID = 2;
+            public static final int driveMotorID = 7;
+            public static final int rotationMotorID = 8;
             public static final int canCoderID = 13;
             public static final boolean driveInvert = false;
             public static final boolean rotationInvert = false;
@@ -102,8 +102,8 @@ public class Constants {
 
         // Front Right Module - Module 1
         public static final class FrontRightModule {
-            public static final int driveMotorID = 3;
-            public static final int rotationMotorID = 4;
+            public static final int driveMotorID = 6;
+            public static final int rotationMotorID = 5;
             public static final int canCoderID = 23;
             public static final boolean driveInvert = false;
             public static final boolean rotationInvert = false;
@@ -113,8 +113,8 @@ public class Constants {
 
         // Back Left Module - Module 2
         public static final class BackLeftModule {
-            public static final int driveMotorID = 5;
-            public static final int rotationMotorID = 6;
+            public static final int driveMotorID = 1;
+            public static final int rotationMotorID = 2;
             public static final int canCoderID = 33;
             public static final boolean driveInvert = false;
             public static final boolean rotationInvert = false;
@@ -124,8 +124,8 @@ public class Constants {
 
         // Back Right Module - Module 3
         public static final class BackRightModule {
-            public static final int driveMotorID = 7;
-            public static final int rotationMotorID = 8;
+            public static final int driveMotorID = 4;
+            public static final int rotationMotorID = 3;
             public static final int canCoderID = 43;
             public static final boolean driveInvert = false;
             public static final boolean rotationInvert = false;

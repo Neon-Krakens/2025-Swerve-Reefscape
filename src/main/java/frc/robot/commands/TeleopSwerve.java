@@ -51,12 +51,12 @@ public class TeleopSwerve extends Command {
                 MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.Swerve.stickDeadband));
         double strafeVal = strafeLimiter.calculate(
                 MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.Swerve.stickDeadband));
-        double rotationVal = rotationLimiter.calculate(
-                MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.Swerve.stickDeadband));
+        // double rotationVal = rotationLimiter.calculate(
+                // MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.Swerve.stickDeadband));
 
         s_Swerve.drive(
                 new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed),
-                rotationVal * Constants.Swerve.maxAngularVelocity,
+                0,//rotationVal * Constants.Swerve.maxAngularVelocity,
                 isFieldOriented,
                 true);
     }
