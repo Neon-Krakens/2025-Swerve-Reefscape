@@ -60,13 +60,25 @@ public class SwerveModule {
     }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
-        // if(moduleNumber==1) {
-        //     System.out.println(desiredState.speedMetersPerSecond);
-        // }
-
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
-        setAngle(desiredState);
+
+        // setAngle(desiredState);
         setSpeed(desiredState, isOpenLoop);
+    }
+
+    public void setAngle(double targetAngle) {
+        // Convert CanCoder output to degrees (-0.5 to 0.5 scaled to -180 to 180)
+        double currentAngle = getCanCoder().getDegrees() * 360;
+        // Normalize current angle to [0, 360)
+        currentAngle = (currentAngle % 360 + 360) % 360;
+        // Normalize target angle to [0, 360)
+        targetAngle = (targetAngle % 360 + 360) % 360;
+        // Calculate the shortest path to the target angle
+        double deltaAngle = ((targetAngle - currentAngle + 540) % 360) - 180;
+        // Calculate the desired angle
+        double desiredAngle = currentAngle + deltaAngle;
+        // Set the motor controller to the desired angle
+        rotationController.setReference(desiredAngle, ControlType.kPosition);
     }
 
     private void resetToAbsolute() {
@@ -143,9 +155,7 @@ public class SwerveModule {
     }
 
     private void setAngle(SwerveModuleState desiredState) {
-        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.maxSpeed * 0.01))
-            ? lastAngle
-            : desiredState.angle;
+        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.maxSpeed * 0.01))? lastAngle: desiredState.angle;
 
         rotationController.setReference(angle.getDegrees(), ControlType.kPosition);
         lastAngle = angle;
