@@ -1,7 +1,7 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
+// import com.pathplanner.lib.auto.AutoBuilder;
+// import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -20,7 +20,7 @@ public class RobotContainer {
     private final Vision vision = new Vision();
     public final Swerve s_Swerve = new Swerve(vision);
     private final XboxController driverController = new XboxController(0);
-    private final SendableChooser<Command> autoChooser;
+    // private final SendableChooser<Command> autoChooser;
 
     private final TeleopSwerve teleopSwerve = new TeleopSwerve(
         s_Swerve,
@@ -33,13 +33,13 @@ public class RobotContainer {
     LightSubsystem lightSubsystem = new LightSubsystem();
 
     public RobotContainer() {
-        NamedCommands.registerCommand("RaiseElevator", new RaiseElevator());
-        NamedCommands.registerCommand("DepositCoral", new DepositCoral());
+        // NamedCommands.registerCommand("RaiseElevator", new RaiseElevator());
+        // NamedCommands.registerCommand("DepositCoral", new DepositCoral());
 
-        autoChooser = AutoBuilder.buildAutoChooser();
+        // autoChooser = AutoBuilder.buildAutoChooser();
         
         configureButtonBindings();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        // SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     private void configureButtonBindings() {
@@ -52,7 +52,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        return null;//autoChooser.getSelected();
     }
 
     public Command getTeleopCommand() {

@@ -134,7 +134,7 @@ public class Constants {
             public static final boolean driveInvert = false;
             public static final boolean rotationInvert = false;
             public static final boolean canCoderInvert = false;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(80);
         }
     }
 }

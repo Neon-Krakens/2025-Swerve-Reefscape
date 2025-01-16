@@ -68,17 +68,23 @@ public class SwerveModule {
 
     public void setAngle(double targetAngle) {
         // Convert CanCoder output to degrees (-0.5 to 0.5 scaled to -180 to 180)
-        double currentAngle = getCanCoder().getDegrees() * 360;
+        double currentAngle = (getCanCoder().getDegrees() * 360);
+        
         // Normalize current angle to [0, 360)
-        currentAngle = (currentAngle % 360 + 360) % 360;
+        currentAngle = ((currentAngle % 360 + 360) % 360);
         // Normalize target angle to [0, 360)
-        targetAngle = (targetAngle % 360 + 360) % 360;
+        targetAngle = ((targetAngle % 360 + 360) % 360);
+
         // Calculate the shortest path to the target angle
         double deltaAngle = ((targetAngle - currentAngle + 540) % 360) - 180;
-        // Calculate the desired angle
+        // // Calculate the desired angle
         double desiredAngle = currentAngle + deltaAngle;
-        // Set the motor controller to the desired angle
-        rotationController.setReference(desiredAngle, ControlType.kPosition);
+
+        if(moduleNumber==3 || moduleNumber == 1) {
+            System.out.println("MODULE"+moduleNumber+" ANGLE: "+currentAngle+" DELTA: "+deltaAngle+" DESIRED: "+desiredAngle+" TARGET: "+targetAngle);
+            // // Set the motor controller to the desired angle 
+            rotationController.setReference(2, ControlType.kPosition);
+        }
     }
 
     private void resetToAbsolute() {

@@ -32,6 +32,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+   
   }
 
   @Override
@@ -51,7 +52,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    m_robotContainer.s_Swerve.zeroWheels();
+  }
 
   @Override
   public void testInit() {
