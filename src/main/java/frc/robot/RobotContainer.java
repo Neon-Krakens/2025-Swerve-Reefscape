@@ -26,7 +26,8 @@ public class RobotContainer {
         s_Swerve,
         () -> -driverController.getLeftY(), // forward/backward
         () -> driverController.getLeftX(), // left/right
-        () -> driverController.getRightX(), // rotation
+        () -> driverController.getRightX(), // rotation 
+        () -> driverController.getRightY(), // rotation 
         driverController::getStartButton // Toggle field-oriented mode with Start button
     );
 

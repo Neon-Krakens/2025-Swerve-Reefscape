@@ -230,6 +230,26 @@ public class Swerve extends SubsystemBase {
                 : Rotation2d.fromDegrees(gyro.getYaw());
     }
 
+
+    public void setDirection(double angle) {
+        for (SwerveModule mod : mSwerveMods) {
+            mod.setAngle(angle);
+        }
+    }
+
+    public void setSpeed(double speed) {
+        for (SwerveModule mod : mSwerveMods) {
+            mod.setDriveSpeed(speed);
+        }
+    }
+
+    public void setWheelAngle(int index, double angle) {
+        mSwerveMods[index].setAngle(angle);
+    }
+    public void setWheelSpeed(int index, double speed) {
+        mSwerveMods[index].setDriveSpeed(speed);
+    }
+
     @Override
     public void periodic() {
         swerveOdometry.update(getYaw(), getModulePositions());
