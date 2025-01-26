@@ -88,7 +88,6 @@ public class TeleopSwerve extends Command {
                 // } else {
                         // Set the robot's direction and speed using s_Swerve methods
                         double angleDegrees = Math.toDegrees(desiredAngle);
-                        System.out.println(angleDegrees);
                         
                         s_Swerve.setDirection(angleDegrees); // Pass the desired angle (in radians)
                         s_Swerve.setSpeed(-translationSpeed); // Pass the calculated translation speed

@@ -72,7 +72,7 @@ public class SwerveModule {
         targetAngle = ((targetAngle) % 360 + 360) % 360;  // Adjust target angle by the offset
         double deltaAngle = ((targetAngle - currentAngle + 540) % 360) - 180;
         double speed = deltaAngle / 180.0;  // Scales the speed to [-1, 1] as deltaAngle ranges from -180 to 180
-        speed = Math.max(-1.0, Math.min(1.0, speed));
+        speed = Math.max(-Constants.Swerve.maxWheelRotateSpeed, Math.min(Constants.Swerve.maxWheelRotateSpeed, speed));
         rotationMotor.set(speed);
     }
 
