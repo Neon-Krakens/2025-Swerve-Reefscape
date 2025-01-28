@@ -231,24 +231,49 @@ public class Swerve extends SubsystemBase {
     }
 
 
-    public void setDirection(double angle) {
+    public void setAllWheelDirection(double angle) {
         for (SwerveModule mod : mSwerveMods) {
             mod.setAngle(angle);
         }
     }
 
-    public void setSpeed(double speed) {
+    public void setAllWheelSpeed(double speed) {
         for (SwerveModule mod : mSwerveMods) {
             mod.setDriveSpeed(speed);
         }
     }
 
-    public void setWheelAngle(int index, double angle) {
-        mSwerveMods[index].setAngle(angle);
+    // 0-360
+    public void setBotDirection(double targetAngle) {
+        double currentHeading = gyro.getAngle() % 360;
+        double deltaAngle = targetAngle - currentHeading;
+
+        // Normalize deltaAngle to be within [-180, 180]
+        deltaAngle = ((deltaAngle + 180) % 360) - 180;
+
+        // Determine the direction to rotate the wheels
+        if (Math.abs(deltaAngle) > 90) {
+            // Clockwise rotation
+            mSwerveMods[0].setAngle(45); 
+            mSwerveMods[1].setAngle(135); 
+            mSwerveMods[2].setAngle(-45);
+            mSwerveMods[3].setAngle(-135);
+        } else {
+            // Counter-clockwise rotation
+            mSwerveMods[0].setAngle(-45);
+            mSwerveMods[1].setAngle(-135);
+            mSwerveMods[2].setAngle(45);
+            mSwerveMods[3].setAngle(135);
+        }
+
+        // Set the rotation speed based on the deltaAngle
+        double rotationSpeed = deltaAngle / 180.0; // Scale to [-1, 1]
+        rotationSpeed = Math.max(-Constants.Swerve.maxWheelRotateSpeed, Math.min(Constants.Swerve.maxWheelRotateSpeed, rotationSpeed));
+
+        // Set the wheel speeds for rotation
+        setAllWheelSpeed(rotationSpeed);
     }
-    public void setWheelSpeed(int index, double speed) {
-        mSwerveMods[index].setDriveSpeed(speed);
-    }
+
 
     @Override
     public void periodic() {
@@ -257,13 +282,6 @@ public class Swerve extends SubsystemBase {
 
         SmartDashboard.putNumber("Gyro", gyro.getAngle());
         SmartDashboard.putData("field", field);
-
-        // SmartDashboard.putNumber("localizationX", estimateOdometry.getEstimatedPosition().getX());
-        // SmartDashboard.putNumber("localizationY", estimateOdometry.getEstimatedPosition().getY());
-        // SmartDashboard.putNumber("localizationR", gyro.getAngle());
-        // SmartDashboard.putNumber("Gyrothingy Displacement", gyro.getDisplacementY());
-        // SmartDashboard.putNumber("odometryX", swerveOdometry.getPoseMeters().getX());
-        // SmartDashboard.putNumber("odometryY", swerveOdometry.getPoseMeters().getY());
 
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees()*180);

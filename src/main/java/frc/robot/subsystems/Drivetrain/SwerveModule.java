@@ -34,8 +34,9 @@ public class SwerveModule {
     private CANcoder absoluteEncoder; // CANcoder located above the swerve module
 
     private final SparkClosedLoopController driveController; // Very precise way of controlling Drive SparkMax (PID)
+    private final SparkClosedLoopController rotationController; // Very precise way of controlling Rotation SparkMax (PID)
 
-    public SwerveModule(int moduleNumber, ModuleConfig moduleConfig){
+    public SwerveModule(int moduleNumber, ModuleConfig moduleConfig) {
         this.moduleNumber = moduleNumber;
         this.angleOffset = moduleConfig.angleOffset;
 
@@ -46,6 +47,7 @@ public class SwerveModule {
         // rotation motor config
         this.rotationMotor = new SparkMax(moduleConfig.rotationMotorID, MotorType.kBrushless);
         this.rotationEncoder = rotationMotor.getEncoder();
+        this.rotationController = rotationMotor.getClosedLoopController();
         configRotationMotor(moduleConfig.rotationInvert);
 
         // drive Motor Config
@@ -57,11 +59,13 @@ public class SwerveModule {
         this.lastAngle = getState().angle;
     }
 
+    
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
 
         // desired state gives target angle in -180 to 180
-        setAngle(desiredState.angle.getDegrees());
+        // setAngle(desiredState.angle.getDegrees());
+        setAngle(desiredState);
         setSpeed(desiredState, isOpenLoop);
     }
 
@@ -151,6 +155,13 @@ public class SwerveModule {
                 ControlType.kVelocity
             );
         }
+    }
+
+    private void setAngle(SwerveModuleState desiredState) {
+        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.maxSpeed * 0.01))? lastAngle: desiredState.angle;
+
+        rotationController.setReference(angle.getDegrees(), ControlType.kPosition);
+        lastAngle = angle;
     }
 
     public Rotation2d getAngle() {
