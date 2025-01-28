@@ -64,8 +64,7 @@ public class SwerveModule {
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
 
         // desired state gives target angle in -180 to 180
-        // setAngle(desiredState.angle.getDegrees());
-        setAngle(desiredState);
+        setAngle(desiredState.angle.getDegrees());
         setSpeed(desiredState, isOpenLoop);
     }
 

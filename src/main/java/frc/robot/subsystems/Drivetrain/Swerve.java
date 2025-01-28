@@ -245,33 +245,37 @@ public class Swerve extends SubsystemBase {
 
     // 0-360
     public void setBotDirection(double targetAngle) {
-        double currentHeading = gyro.getAngle() % 360;
+        double currentHeading = getYaw().getDegrees();
         double deltaAngle = targetAngle - currentHeading;
 
+        // if(deltaAngle < -180) {
+        //     deltaAngle += 180;
+        // }
+
         // Normalize deltaAngle to be within [-180, 180]
-        deltaAngle = ((deltaAngle + 180) % 360) - 180;
+        System.out.println(deltaAngle+" "+ targetAngle);
+        mSwerveMods[0].setAngle(45+180); 
+        mSwerveMods[1].setAngle(45+180+90); 
+        mSwerveMods[2].setAngle(45+90); 
+        mSwerveMods[3].setAngle(45); 
+            
+        if(deltaAngle < 0) {
+            setAllWheelSpeed(0.05);
+        } else {
+            setAllWheelSpeed(-0.05);
+        }
+
+        // System.out.println(currentHeading+" "+targetAngle);
 
         // Determine the direction to rotate the wheels
-        if (Math.abs(deltaAngle) > 90) {
-            // Clockwise rotation
-            mSwerveMods[0].setAngle(45); 
-            mSwerveMods[1].setAngle(135); 
-            mSwerveMods[2].setAngle(-45);
-            mSwerveMods[3].setAngle(-135);
-        } else {
-            // Counter-clockwise rotation
-            mSwerveMods[0].setAngle(-45);
-            mSwerveMods[1].setAngle(-135);
-            mSwerveMods[2].setAngle(45);
-            mSwerveMods[3].setAngle(135);
-        }
+        // // if (...) {
+        
 
         // Set the rotation speed based on the deltaAngle
         double rotationSpeed = deltaAngle / 180.0; // Scale to [-1, 1]
         rotationSpeed = Math.max(-Constants.Swerve.maxWheelRotateSpeed, Math.min(Constants.Swerve.maxWheelRotateSpeed, rotationSpeed));
 
         // Set the wheel speeds for rotation
-        setAllWheelSpeed(rotationSpeed);
     }
 
 

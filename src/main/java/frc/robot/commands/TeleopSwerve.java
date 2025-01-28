@@ -54,36 +54,35 @@ public class TeleopSwerve extends Command {
                 double translationVal = translationLimiter.calculate(MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.Swerve.stickDeadband));
                 double strafeVal = strafeLimiter.calculate(MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.Swerve.stickDeadband));
 
+                // // Calculate the desired angle based on joystick X (strafe) and Y (translation)
+                // double desiredAngle = Math.atan2(strafeVal, translationVal);
+
+                // // Calculate the translation speed as the distance from (0, 0) to
+                // double translationSpeed = Math.sqrt(Math.pow(translationVal, 2) + Math.pow(strafeVal, 2));
+
+                // // Optionally, you can scale translationSpeed by maxSpeed if needed
+                // translationSpeed = translationSpeed * Constants.Swerve.maxSpeed;
+
+                // double angleDegrees = Math.toDegrees(desiredAngle);
+
+                // s_Swerve.setAllWheelDirection(angleDegrees);
+                // s_Swerve.setAllWheelSpeed(-translationSpeed);
+
+                double rotationX = rotationXSup.getAsDouble();
+                double rotationY = rotationYSup.getAsDouble();
                 // Calculate the desired angle based on joystick X (strafe) and Y (translation)
-                double desiredAngle = Math.atan2(strafeVal, translationVal);
+                double desiredBotAngle = Math.atan2(rotationY, rotationX);
 
-                // Calculate the translation speed as the distance from (0, 0) to
-                double translationSpeed = Math.sqrt(Math.pow(translationVal, 2) + Math.pow(strafeVal, 2));
+                // Add 90 degrees (convert to radians for math operations)
+                double angleBotDegrees = Math.toDegrees(desiredBotAngle) + 90;
 
-                // Optionally, you can scale translationSpeed by maxSpeed if needed
-                translationSpeed = translationSpeed * Constants.Swerve.maxSpeed;
-
-                double angleDegrees = Math.toDegrees(desiredAngle);
-
-                s_Swerve.setAllWheelDirection(angleDegrees);
-                s_Swerve.setAllWheelSpeed(-translationSpeed);
-
-
-                double rotationX = rotationLimiter.calculate(MathUtil.applyDeadband(rotationXSup.getAsDouble(), Constants.Swerve.stickDeadband));
-                double rotationY = rotationLimiter.calculate(MathUtil.applyDeadband(rotationYSup.getAsDouble(), Constants.Swerve.stickDeadband));
-
-                // Calculate the desired angle based on joystick X (strafe) and Y (translation)
-                double desiredBotAngle = Math.atan2(rotationX, rotationY);
-
-                // Calculate the translation speed as the distance from (0, 0) to
-                double botRotationSpeed = Math.sqrt(Math.pow(translationVal, 2) + Math.pow(strafeVal, 2));
-
-                // Optionally, you can scale translationSpeed by maxSpeed if needed
-                botRotationSpeed = botRotationSpeed * Constants.Swerve.maxSpeed;
-
-                double angleBotDegrees = Math.toDegrees(desiredBotAngle);
-
-                s_Swerve.setBotDirection(angleBotDegrees);
+                // Normalize the result to be within the bounds of [-180, 180]
+                if (angleBotDegrees > 180) {
+                angleBotDegrees -= 360;  // If it's greater than 180, subtract 360 to bring it into the range
+                } else if (angleBotDegrees < -180) {
+                angleBotDegrees += 360;  // If it's less than -180, add 360 to bring it into the range
+                }
+                if(Math.abs(rotationX)+Math.abs(rotationY) > 0.5) s_Swerve.setBotDirection(angleBotDegrees);
         }
 
 }
