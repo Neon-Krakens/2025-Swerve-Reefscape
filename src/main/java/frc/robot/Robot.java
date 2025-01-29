@@ -12,6 +12,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
+    m_robotContainer.s_Swerve.zeroWheels();
   }
 
   @Override
@@ -49,11 +50,12 @@ public class Robot extends TimedRobot {
     if (m_teleopCommand != null) {
       m_teleopCommand.schedule();
     }
-    m_robotContainer.s_Swerve.zeroWheels();
+    
   }
 
   @Override
   public void teleopPeriodic() {
+    
   }
 
   @Override

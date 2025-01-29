@@ -25,7 +25,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -211,6 +210,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public void zeroGyro() {
+        System.out.println("ZEROD GYRO SCOPE");
         gyro.zeroYaw();
     }
 
@@ -218,6 +218,7 @@ public class Swerve extends SubsystemBase {
         for (SwerveModule mod : mSwerveMods) {
             mod.setAngle(0);
         }
+        zeroGyro();
     }
 
     public void resetPose(Pose2d pose) {
@@ -245,45 +246,38 @@ public class Swerve extends SubsystemBase {
 
     // 0-360
     public void setBotDirection(double targetAngle) {
-        double currentHeading = getYaw().getDegrees();
+        System.out.println("TARGET " + targetAngle);
+        double currentHeading = -getYaw().getDegrees();
+        
         double deltaAngle = targetAngle - currentHeading;
 
-        // if(deltaAngle < -180) {
-        //     deltaAngle += 180;
-        // }
-
         // Normalize deltaAngle to be within [-180, 180]
-        System.out.println(deltaAngle+" "+ targetAngle);
-        mSwerveMods[0].setAngle(45+180); 
+        mSwerveMods[0].setAngle(45+180);
         mSwerveMods[1].setAngle(45+180+90); 
         mSwerveMods[2].setAngle(45+90); 
         mSwerveMods[3].setAngle(45); 
             
-        if(deltaAngle < 0) {
-            setAllWheelSpeed(0.05);
-        } else {
-            setAllWheelSpeed(-0.05);
-        }
-
-        // System.out.println(currentHeading+" "+targetAngle);
-
-        // Determine the direction to rotate the wheels
-        // // if (...) {
-        
-
-        // Set the rotation speed based on the deltaAngle
-        double rotationSpeed = deltaAngle / 180.0; // Scale to [-1, 1]
+        double rotationSpeed = deltaAngle / -180.0; // Scale to [-1, 1]
         rotationSpeed = Math.max(-Constants.Swerve.maxWheelRotateSpeed, Math.min(Constants.Swerve.maxWheelRotateSpeed, rotationSpeed));
-
-        // Set the wheel speeds for rotation
+        if(deltaAngle < -3) {
+            setAllWheelSpeed(-Math.abs(rotationSpeed));
+        } else if(deltaAngle > 3) {
+            setAllWheelSpeed(Math.abs(rotationSpeed));
+        } else {
+            setAllWheelSpeed(0);
+        }
     }
 
-
+    boolean zerod = false;
     @Override
     public void periodic() {
         swerveOdometry.update(getYaw(), getModulePositions());
         estimateOdometry.update(getYaw(), getModulePositions());
 
+        if(!zerod) {
+            gyro.zeroYaw();
+            zerod = true;
+        }
         SmartDashboard.putNumber("Gyro", gyro.getAngle());
         SmartDashboard.putData("field", field);
 
