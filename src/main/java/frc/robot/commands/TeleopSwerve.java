@@ -15,16 +15,11 @@ public class TeleopSwerve extends Command {
         private final DoubleSupplier strafeSup;
         private final DoubleSupplier rotationXSup;
         private final DoubleSupplier rotationYSup;
+        private final BooleanSupplier resetGyro;
 
         public final XboxController driverController;
-
-        private final BooleanSupplier toggleFieldOriented;
-
         private final SlewRateLimiter translationLimiter = new SlewRateLimiter(3.0);
         private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.0);
-
-        private boolean isFieldOriented = true; // Field oriented means the robot drives relative to the field, not the
-                                                // robot
 
         public TeleopSwerve(
                         Swerve s_Swerve,
@@ -32,7 +27,7 @@ public class TeleopSwerve extends Command {
                         DoubleSupplier strafeSup,
                         DoubleSupplier rotationSupX,
                         DoubleSupplier rotationSupY,
-                        BooleanSupplier toggleFieldOriented,
+                        BooleanSupplier resetGyro,
                         XboxController controller) {
                 this.s_Swerve = s_Swerve;
                 addRequirements(s_Swerve);
@@ -41,61 +36,54 @@ public class TeleopSwerve extends Command {
                 this.strafeSup = strafeSup;
                 this.rotationXSup = rotationSupX;
                 this.rotationYSup = rotationSupY;
+                this.resetGyro = resetGyro;
 
                 this.driverController = controller;
-                this.toggleFieldOriented = toggleFieldOriented;
         }
+
+        boolean lastMovementMode = false;
 
         @Override
         public void execute() {
-                if (toggleFieldOriented.getAsBoolean()) {
-                        isFieldOriented = !isFieldOriented;
+                if (resetGyro.getAsBoolean()) {
+                        s_Swerve.zeroWheels();
+                        s_Swerve.zeroGyro();
+                }
+                boolean movingMovement = Math.abs(translationSup.getAsDouble()) > 0.1
+                                || Math.abs(strafeSup.getAsDouble()) > 0.1;
+
+                double rotationX = rotationXSup.getAsDouble();
+                double rotationY = rotationYSup.getAsDouble();
+                // Calculate the desired angle based on joystick X (strafe) and Y (translation)
+
+                double desiredBotAngle = Math.atan2(rotationY, rotationX);
+
+                // Add 90 degrees (convert to radians for math operations)
+                double angleBotDegrees = Math.toDegrees(desiredBotAngle) + 90;
+
+                // Normalize the result to be within the bounds of [-180, 180]
+                if (angleBotDegrees > 180) {
+                        angleBotDegrees -= 360; // If it's greater than 180, subtract 360 to bring it into the
+                                                // range
+                } else if (angleBotDegrees < -180) {
+                        angleBotDegrees += 360; // If it's less than -180, add 360 to bring it into the range
                 }
 
-                boolean movingMovement = Math.abs(translationSup.getAsDouble()) > 0.1 || Math.abs(strafeSup.getAsDouble()) > 0.1;
-                if (movingMovement) {
-                        double translationVal = translationLimiter.calculate(MathUtil
-                                        .applyDeadband(translationSup.getAsDouble(), Constants.Swerve.stickDeadband));
-                        double strafeVal = strafeLimiter.calculate(MathUtil.applyDeadband(strafeSup.getAsDouble(),
-                                        Constants.Swerve.stickDeadband));
-
-                        // Calculate the desired angle based on joystick X (strafe) and Y (translation)
-                        double desiredAngle = Math.atan2(strafeVal, translationVal);
-
-                        // Calculate the translation speed as the distance from (0, 0) to
-                        double translationSpeed = Math.sqrt(Math.pow(translationVal, 2) + Math.pow(strafeVal, 2));
-
-                        // Optionally, you can scale translationSpeed by maxSpeed if needed
-                        translationSpeed = translationSpeed * Constants.Swerve.maxSpeed;
-
-                        double angleDegrees = Math.toDegrees(desiredAngle) + s_Swerve.getYaw().getDegrees();
-
-                        s_Swerve.setAllWheelDirection(angleDegrees);
-                        s_Swerve.setAllWheelSpeed(-translationSpeed);
-                } else {
-                        double rotationX = rotationXSup.getAsDouble();
-                        double rotationY = rotationYSup.getAsDouble();
-                        // Calculate the desired angle based on joystick X (strafe) and Y (translation)
-                        
-                        double desiredBotAngle = Math.atan2(rotationY, rotationX);
-
-                        // Add 90 degrees (convert to radians for math operations)
-                        double angleBotDegrees = Math.toDegrees(desiredBotAngle) + 90;
-
-                        // Normalize the result to be within the bounds of [-180, 180]
-                        if (angleBotDegrees > 180) {
-                                angleBotDegrees -= 360; // If it's greater than 180, subtract 360 to bring it into the
-                                                        // range
-                        } else if (angleBotDegrees < -180) {
-                                angleBotDegrees += 360; // If it's less than -180, add 360 to bring it into the range
-                        }
-                        
-                        if(Math.abs(rotationX)+Math.abs(rotationY) > 0.3) {
-                                s_Swerve.setBotDirection(angleBotDegrees);
-                        } else {
-                                s_Swerve.setAllWheelSpeed(0);
-                        }
+                if (Math.abs(rotationX) + Math.abs(rotationY) > 0.3) {
+                        s_Swerve.setBotDirection(angleBotDegrees);
                 }
+
+                double translationVal = translationLimiter.calculate(MathUtil
+                                .applyDeadband(translationSup.getAsDouble(), Constants.Swerve.stickDeadband));
+                double strafeVal = strafeLimiter.calculate(MathUtil.applyDeadband(strafeSup.getAsDouble(),
+                                Constants.Swerve.stickDeadband));
+
+
+                if (Math.abs(translationVal) + Math.abs(strafeVal) > 0.3) {
+                        s_Swerve.rotateDrive(strafeVal, translationVal);
+                }
+                
+                s_Swerve.update();
         }
 
 }

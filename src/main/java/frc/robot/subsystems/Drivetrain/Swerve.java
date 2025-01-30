@@ -210,13 +210,12 @@ public class Swerve extends SubsystemBase {
     }
 
     public void zeroGyro() {
-        System.out.println("ZEROD GYRO SCOPE");
         gyro.zeroYaw();
     }
 
     public void zeroWheels() {
         for (SwerveModule mod : mSwerveMods) {
-            mod.setAngle(0);
+            mod.setAngle(0,false);
         }
         zeroGyro();
     }
@@ -234,7 +233,16 @@ public class Swerve extends SubsystemBase {
 
     public void setAllWheelDirection(double angle) {
         for (SwerveModule mod : mSwerveMods) {
-            mod.setAngle(angle);
+            boolean gotToTarget = mod.setAngle(angle, true);
+            if(!gotToTarget) {
+                allWheelsRotatedToTarget = false;
+            }
+        }
+    }
+
+    public void setAllWheelRotationSpeed(double speed) {
+        for (SwerveModule mod : mSwerveMods) {
+            mod.setRotationSpeed(speed);
         }
     }
 
@@ -244,28 +252,106 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    boolean rotatingToTarget = false;
+    boolean driving = false;
+    double targetAngle = 0.0;
+    double botTranslationDegrees = 181.0;
+    double lastBotTranslationDegrees = 181.0;
+
+    boolean allWheelsRotatedToTarget = false;
+
+    double botTranslationSpeed = 0.0;
+
+    public void update() {
+        if(rotatingToTarget) {
+            if(driving) return;
+
+            mSwerveMods[0].setAngle(45+180,false);
+            mSwerveMods[1].setAngle(45+180+90,false); 
+            mSwerveMods[2].setAngle(45+90,false); 
+            mSwerveMods[3].setAngle(45,false); 
+                
+            double currentHeading = -getYaw().getDegrees();
+        
+            double deltaAngle = targetAngle - currentHeading;
+            double rotationSpeed = deltaAngle / -180.0; // Scale to [-1, 1]
+
+            rotationSpeed = Math.max(-Constants.Swerve.maxWheelRotateSpeed, Math.min(Constants.Swerve.maxWheelRotateSpeed, rotationSpeed));
+            if(deltaAngle < -5) {
+                setAllWheelSpeed(-Math.abs(rotationSpeed));
+            } else if(deltaAngle > 5) {
+                setAllWheelSpeed(Math.abs(rotationSpeed));
+            } else {
+                rotatingToTarget = false;
+                setAllWheelSpeed(0.0);
+            }
+
+            if(!rotatingToTarget) {
+                driving = true;
+                if(botTranslationDegrees != 181.0 && lastBotTranslationDegrees != botTranslationDegrees) {
+                    allWheelsRotatedToTarget = true;
+                    setAllWheelDirection(botTranslationDegrees);
+                }
+                lastBotTranslationDegrees = botTranslationDegrees;
+
+                // Reset to rotation mode if No input on driving translation
+                if(botTranslationSpeed == 0.0) {
+                    setAllWheelRotationSpeed(0.0);
+                    driving = false;
+                }
+
+                if(allWheelsRotatedToTarget) {
+                    setAllWheelSpeed(botTranslationSpeed);
+                } else {
+                    setAllWheelSpeed(0.0);
+                }
+            }
+        } else {
+            driving = true;
+            if(botTranslationDegrees != 181.0 && lastBotTranslationDegrees != botTranslationDegrees) {
+                allWheelsRotatedToTarget = true;
+                setAllWheelDirection(botTranslationDegrees);
+            }
+            lastBotTranslationDegrees = botTranslationDegrees;
+
+            // Reset to rotation mode if No input on driving translation
+            if(botTranslationSpeed == 0.0) {
+                setAllWheelRotationSpeed(0.0);
+                driving = false;
+            }
+
+            if(allWheelsRotatedToTarget) {
+                setAllWheelSpeed(botTranslationSpeed);
+            } else {
+                setAllWheelSpeed(0.0);
+            }
+        }
+
+        botTranslationSpeed = 0.0;
+    }
+
     // 0-360
     public void setBotDirection(double targetAngle) {
-        System.out.println("TARGET " + targetAngle);
-        double currentHeading = -getYaw().getDegrees();
-        
-        double deltaAngle = targetAngle - currentHeading;
+        this.targetAngle = targetAngle;
 
         // Normalize deltaAngle to be within [-180, 180]
-        mSwerveMods[0].setAngle(45+180);
-        mSwerveMods[1].setAngle(45+180+90); 
-        mSwerveMods[2].setAngle(45+90); 
-        mSwerveMods[3].setAngle(45); 
-            
-        double rotationSpeed = deltaAngle / -180.0; // Scale to [-1, 1]
-        rotationSpeed = Math.max(-Constants.Swerve.maxWheelRotateSpeed, Math.min(Constants.Swerve.maxWheelRotateSpeed, rotationSpeed));
-        if(deltaAngle < -3) {
-            setAllWheelSpeed(-Math.abs(rotationSpeed));
-        } else if(deltaAngle > 3) {
-            setAllWheelSpeed(Math.abs(rotationSpeed));
-        } else {
-            setAllWheelSpeed(0);
-        }
+        rotatingToTarget = true;
+    }
+
+    public void rotateDrive(double strafeVal, double translationVal) {
+        // Calculate the desired angle based on joystick X (strafe) and Y (translation)
+        double desiredAngle = Math.atan2(strafeVal, translationVal);
+
+        // Calculate the translation speed as the distance from (0, 0) to
+        double translationSpeed = Math.sqrt(Math.pow(translationVal, 2) + Math.pow(strafeVal, 2));
+
+        // Optionally, you can scale translationSpeed by maxSpeed if needed
+        translationSpeed = translationSpeed * Constants.Swerve.maxSpeed;
+
+        double angleDegrees = Math.toDegrees(desiredAngle) + getYaw().getDegrees();
+
+        botTranslationSpeed = -translationSpeed;
+        botTranslationDegrees = angleDegrees;
     }
 
     boolean zerod = false;

@@ -22,23 +22,14 @@ public class RobotContainer {
         () -> -driverController.getLeftY(), // forward/backward
         () -> driverController.getLeftX(), // left/right
         () -> driverController.getRightX(), // rotation 
-        () -> driverController.getRightY(), // rotation 
-        driverController::getStartButton, // Toggle field-oriented mode with Start button,
+        () -> driverController.getRightY(), // rotation ,
+        () -> driverController.getYButton(),
         driverController
     );
 
     LightSubsystem lightSubsystem = new LightSubsystem();
 
     public RobotContainer() {
-        configureButtonBindings();
-    }
-
-    private void configureButtonBindings() {
-        Trigger startAndAButton = new Trigger(() ->
-            driverController.getStartButton() && driverController.getAButton()
-        );
-        
-        startAndAButton.onTrue(new InstantCommand(s_Swerve::zeroGyro, s_Swerve));
     }
 
     public Command getAutonomousCommand() {

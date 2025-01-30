@@ -64,11 +64,11 @@ public class SwerveModule {
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
 
         // desired state gives target angle in -180 to 180
-        setAngle(desiredState.angle.getDegrees());
-        setSpeed(desiredState, isOpenLoop);
+        // setAngle(desiredState.angle.getDegrees());
+        // setSpeed(desiredState, isOpenLoop);
     }
 
-    public void setAngle(double targetAngle) {
+    public boolean setAngle(double targetAngle, boolean driveMode) {
         targetAngle = targetAngle + 180; // convery from -180,180 to 0,360
         double currentAngle = (getCanCoder().getDegrees() * 360) - angleOffset.getDegrees();  // Adjust current angle by the offset
         currentAngle = ((currentAngle % 360 + 360) % 360);
@@ -76,6 +76,18 @@ public class SwerveModule {
         double deltaAngle = ((targetAngle - currentAngle + 540) % 360) - 180;
         double speed = deltaAngle / 180.0;  // Scales the speed to [-1, 1] as deltaAngle ranges from -180 to 180
         speed = Math.max(-Constants.Swerve.maxWheelRotateSpeed, Math.min(Constants.Swerve.maxWheelRotateSpeed, speed));
+        setRotationSpeed(speed);
+        if(driveMode) {
+            if(speed > 0.03) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setRotationSpeed(double speed) {
         rotationMotor.set(speed);
     }
 
