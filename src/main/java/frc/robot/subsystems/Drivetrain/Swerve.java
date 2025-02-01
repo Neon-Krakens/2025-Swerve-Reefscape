@@ -5,6 +5,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.studica.frc.AHRS;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -26,6 +27,9 @@ import frc.robot.Robot;
 import frc.robot.math.CoordinateSystems;
 import frc.robot.Constants.Swerve.gyroscope_convention;
 import frc.robot.subsystems.Drivetrain.SwerveModuleConfig.ModuleConfig;
+import frc.robot.subsystems.Vision.LimelightHelpers;
+import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.Vision.LimelightAprilTag;
 
 /*
  * Modified from https://github.com/DIEHDZ/Swerve-base-Crescendo-2024/blob/master/src/main/java/frc/robot/subsystems/Drivetrain/Swerve.java
@@ -36,13 +40,15 @@ public class Swerve extends SubsystemBase {
     private final SwerveDrivePoseEstimator estimateOdometry;
     private final SwerveDriveOdometry swerveOdometry;
     private final SwerveModule[] mSwerveMods;
+    private final Vision vision;
 
     // Standard deviations for the state estimate
     private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
     private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 
-    public Swerve() {
+    public Swerve(Vision vision) {
         zeroGyro();
+        this.vision = vision;
         field = new Field2d();
 
         swerveOdometry = new SwerveDriveOdometry(
@@ -321,9 +327,20 @@ public class Swerve extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees()*180);
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Speed", mod.getState().speedMetersPerSecond);
         }
-        field.setRobotPose(
-                CoordinateSystems.FieldMiddle_FieldBottomLeft(new Pose2d(estimateOdometry.getEstimatedPosition().getX(),
-                        estimateOdometry.getEstimatedPosition().getY(), gyro.getRotation2d())));
+
+        boolean doRejectUpdate = false;
+        LimelightHelpers.SetRobotOrientation("", getYaw().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        if(Math.abs(gyro.getRate()) > 720) {
+            doRejectUpdate = true;
+        }
+        if(mt2.tagCount == 0) {
+            doRejectUpdate = true;
+        }
+        if(!doRejectUpdate) {
+            estimateOdometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
+            estimateOdometry.addVisionMeasurement(mt2.pose,mt2.timestampSeconds);
+        }
     }
 
     // From
@@ -336,6 +353,10 @@ public class Swerve extends SubsystemBase {
                 : SensorDirectionValue.Clockwise_Positive;
 
         canCoder.getConfigurator().apply(canCoderConfig);
+    }
+
+    public void orientToClosestTag() {
+        LimelightAprilTag closest = vision.closestTag;
     }
 
 }

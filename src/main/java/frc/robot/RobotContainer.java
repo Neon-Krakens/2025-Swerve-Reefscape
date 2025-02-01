@@ -10,9 +10,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.Drivetrain.Swerve;
 import frc.robot.subsystems.Lighting.LightSubsystem;
+import frc.robot.subsystems.Vision.Vision;
 
 public class RobotContainer {
-    public final Swerve s_Swerve = new Swerve();
+    public final Vision vision = new Vision();
+    public final Swerve s_Swerve = new Swerve(vision);
     public final XboxController driverController = new XboxController(0);
 
     private final TeleopSwerve teleopSwerve = new TeleopSwerve(
