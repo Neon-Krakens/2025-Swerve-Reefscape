@@ -1,15 +1,8 @@
 package frc.robot.subsystems.Drivetrain;
 
-import java.util.Optional;
-
-import org.photonvision.EstimatedRobotPose;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-// import com.pathplanner.lib.auto.AutoBuilder;
-// import com.pathplanner.lib.config.PIDConstants;
-// import com.pathplanner.lib.config.RobotConfig;
-// import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.VecBuilder;
@@ -33,7 +26,6 @@ import frc.robot.Robot;
 import frc.robot.math.CoordinateSystems;
 import frc.robot.Constants.Swerve.gyroscope_convention;
 import frc.robot.subsystems.Drivetrain.SwerveModuleConfig.ModuleConfig;
-import frc.robot.subsystems.Vision.Vision;
 
 /*
  * Modified from https://github.com/DIEHDZ/Swerve-base-Crescendo-2024/blob/master/src/main/java/frc/robot/subsystems/Drivetrain/Swerve.java
@@ -48,12 +40,10 @@ public class Swerve extends SubsystemBase {
     // Standard deviations for the state estimate
     private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
     private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
-    private Vision vision;
 
-    public Swerve(Vision vision) {
+    public Swerve() {
         zeroGyro();
         field = new Field2d();
-        this.vision = vision;
 
         swerveOdometry = new SwerveDriveOdometry(
                 Constants.Swerve.swerveKinematics,
@@ -109,7 +99,6 @@ public class Swerve extends SubsystemBase {
                 visionMeasurementStdDevs);
 
         zeroWheels();
-        configurePathplanner();
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -135,45 +124,6 @@ public class Swerve extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose) {
         swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
-    }
-
-    private void configurePathplanner() {
-        // RobotConfig config = null;
-        // try {
-        //     config = RobotConfig.fromGUISettings();
-        // } catch (Exception e) {
-        //     // Handle exception as needed
-        //     e.printStackTrace();
-        // }
-
-        // // Configure AutoBuilder last
-        // AutoBuilder.configure(
-        //         this::getPose, // Robot pose supplier
-        //         this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-        //         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        //         (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT
-        //                                                               // RELATIVE ChassisSpeeds. Also optionally outputs
-        //                                                               // individual module feedforwards
-        //         new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for
-        //                                         // holonomic drive trains
-        //                 new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-        //                 new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
-        //         ),
-        //         config, // The robot configuration
-        //         () -> {
-        //             // Boolean supplier that controls when the path will be mirrored for the red
-        //             // alliance
-        //             // This will flip the path being followed to the red side of the field.
-        //             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-        //             var alliance = DriverStation.getAlliance();
-        //             if (alliance.isPresent()) {
-        //                 return alliance.get() == DriverStation.Alliance.Red;
-        //             }
-        //             return false;
-        //         },
-        //         this // Reference to this subsystem to set requirements
-        // );
     }
 
     public ChassisSpeeds getRobotRelativeSpeeds() {
@@ -374,15 +324,6 @@ public class Swerve extends SubsystemBase {
         field.setRobotPose(
                 CoordinateSystems.FieldMiddle_FieldBottomLeft(new Pose2d(estimateOdometry.getEstimatedPosition().getX(),
                         estimateOdometry.getEstimatedPosition().getY(), gyro.getRotation2d())));
-
-        if (vision.camera != null) {
-            Optional<EstimatedRobotPose> estimatedPoseOpt = vision.photonPoseEstimator
-                    .update(vision.camera.getLatestResult());
-            if (estimatedPoseOpt.isPresent()) {
-                EstimatedRobotPose pose = estimatedPoseOpt.get();
-                estimateOdometry.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
-            }
-        }
     }
 
     // From
