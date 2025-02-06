@@ -22,7 +22,6 @@ import frc.robot.subsystems.Drivetrain.SwerveModuleConfig.ModuleConfig;
  */
 public class SwerveModule {
     public int moduleNumber;
-    private Rotation2d lastAngle;
     private Rotation2d angleOffset;
 
     private SparkMax rotationMotor; // Rotation Neo Motor Controller
@@ -32,9 +31,6 @@ public class SwerveModule {
     private RelativeEncoder driveEncoder; // Encoder from the NEO motor
     
     private CANcoder absoluteEncoder; // CANcoder located above the swerve module
-
-    private final SparkClosedLoopController driveController; // Very precise way of controlling Drive SparkMax (PID)
-    private final SparkClosedLoopController rotationController; // Very precise way of controlling Rotation SparkMax (PID)
 
     public SwerveModule(int moduleNumber, ModuleConfig moduleConfig) {
         this.moduleNumber = moduleNumber;
@@ -47,30 +43,35 @@ public class SwerveModule {
         // rotation motor config
         this.rotationMotor = new SparkMax(moduleConfig.rotationMotorID, MotorType.kBrushless);
         this.rotationEncoder = rotationMotor.getEncoder();
-        this.rotationController = rotationMotor.getClosedLoopController();
         configRotationMotor(moduleConfig.rotationInvert);
 
         // drive Motor Config
         this.driveMotor = new SparkMax(moduleConfig.driveMotorID, MotorType.kBrushless);
         this.driveEncoder = driveMotor.getEncoder();
-        this.driveController = driveMotor.getClosedLoopController();
         configDriveMotor(moduleConfig.driveInvert);
 
-        this.lastAngle = getState().angle;
     }
 
+    public double wheelAngle = 0.0; 
+    public boolean newOffset = false;
     
-    public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
-        desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
-
-        // desired state gives target angle in -180 to 180
-        // setAngle(desiredState.angle.getDegrees());
-        // setSpeed(desiredState, isOpenLoop);
+    public void updateWheelAngle() {
+        if(!newOffset) {
+            System.out.println("MOD "+moduleNumber+
+            ": OLD:"+angleOffset.getDegrees()+
+            " NEW:"+getCanCoder().getDegrees());
+            angleOffset = Rotation2d.fromDegrees(getCanCoder().getDegrees());
+            newOffset = true;
+        }
+        wheelAngle = (rotationEncoder.getPosition()*360 - angleOffset.getDegrees()) %360;
+        if(moduleNumber == 1) {
+            System.out.println("MOD "+moduleNumber+": ANGLE:"+wheelAngle+" "+angleOffset.getDegrees());
+        }
     }
 
     public boolean setAngle(double targetAngle, boolean driveMode) {
         targetAngle = targetAngle + 180; // convery from -180,180 to 0,360
-        double currentAngle = (getCanCoder().getDegrees() * 360) - angleOffset.getDegrees();  // Adjust current angle by the offset
+        double currentAngle = wheelAngle - angleOffset.getDegrees();  // Adjust current angle by the offset
         currentAngle = ((currentAngle % 360 + 360) % 360);
         targetAngle = ((targetAngle) % 360 + 360) % 360;  // Adjust target angle by the offset
         double deltaAngle = ((targetAngle - currentAngle + 540) % 360) - 180;
@@ -96,7 +97,7 @@ public class SwerveModule {
     }
 
     private void resetToAbsolute() {
-        double absolutePosition = getCanCoder().getDegrees() - angleOffset.getDegrees();
+        double absolutePosition = getCanCoder().getDegrees();
         rotationEncoder.setPosition(absolutePosition);
     }
 
@@ -156,38 +157,7 @@ public class SwerveModule {
         driveEncoder.setPosition(0.0);
     }
 
-    private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
-        if (isOpenLoop) {
-            double percentOutput = desiredState.speedMetersPerSecond / Constants.Swerve.maxSpeed;
-            driveMotor.set(percentOutput);
-        } else {
-            driveController.setReference(
-                desiredState.speedMetersPerSecond,
-                ControlType.kVelocity
-            );
-        }
-    }
-
-    private void setAngle(SwerveModuleState desiredState) {
-        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.maxSpeed * 0.01))? lastAngle: desiredState.angle;
-
-        rotationController.setReference(angle.getDegrees(), ControlType.kPosition);
-        lastAngle = angle;
-    }
-
-    public Rotation2d getAngle() {
-        return Rotation2d.fromDegrees(rotationEncoder.getPosition());
-    }
-
     public Rotation2d getCanCoder() {
-        return Rotation2d.fromDegrees(absoluteEncoder.getAbsolutePosition(true).getValueAsDouble());
-    }
-
-    public SwerveModuleState getState() {
-        return new SwerveModuleState(driveEncoder.getVelocity(), getAngle());
-    }
-
-    public double getPosition() {
-        return driveEncoder.getPosition();
+        return Rotation2d.fromDegrees(absoluteEncoder.getAbsolutePosition(true).getValueAsDouble()-angleOffset.getDegrees());
     }
 }

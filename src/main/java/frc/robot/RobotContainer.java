@@ -24,10 +24,11 @@ public class RobotContainer {
         () -> driverController.getRightX(), // rotation 
         () -> driverController.getRightY(), // rotation ,
         () -> driverController.getYButton(),
+        () -> driverController.getXButton(),
         driverController
     );
 
-    LightSubsystem lightSubsystem = new LightSubsystem();
+    // LightSubsystem lightSubsystem = new LightSubsystem();
 
     public RobotContainer() {
     }

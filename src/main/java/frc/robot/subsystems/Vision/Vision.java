@@ -33,7 +33,7 @@ public class Vision extends SubsystemBase {
 
     public List<AprilTag> tags = fieldLayout.getTags();
 
-    class LimelightAprilTag {
+    public class LimelightAprilTag {
         AprilTag tag;
         public int id;
         public double distFromCamera;
@@ -56,7 +56,7 @@ public class Vision extends SubsystemBase {
             double distToCamera = fiducial.distToCamera; // Distance to camera
             double distToRobot = fiducial.distToRobot; // Distance to robot
             double ambiguity = fiducial.ambiguity; // Tag pose ambiguity
-            System.out.println("ID: " + id + " DIST: " + distToCamera);
+            // System.out.println("ID: " + id + " DIST: " + distToCamera);
 
             closestTag.id = id;
             closestTag.xOffset = txnc;

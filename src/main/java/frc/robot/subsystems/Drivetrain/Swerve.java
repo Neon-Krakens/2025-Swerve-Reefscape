@@ -5,29 +5,12 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.studica.frc.AHRS;
 
-import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
-import frc.robot.math.CoordinateSystems;
-import frc.robot.Constants.Swerve.gyroscope_convention;
 import frc.robot.subsystems.Drivetrain.SwerveModuleConfig.ModuleConfig;
-import frc.robot.subsystems.Vision.LimelightHelpers;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.Vision.LimelightAprilTag;
 
@@ -37,29 +20,13 @@ import frc.robot.subsystems.Vision.Vision.LimelightAprilTag;
 public class Swerve extends SubsystemBase {
     private final AHRS gyro = Constants.Swerve.Gyroscope.gyro;
     private final Field2d field;
-    private final SwerveDrivePoseEstimator estimateOdometry;
-    private final SwerveDriveOdometry swerveOdometry;
     private final SwerveModule[] mSwerveMods;
     private final Vision vision;
-
-    // Standard deviations for the state estimate
-    private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
-    private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 
     public Swerve(Vision vision) {
         zeroGyro();
         this.vision = vision;
         field = new Field2d();
-
-        swerveOdometry = new SwerveDriveOdometry(
-                Constants.Swerve.swerveKinematics,
-                getYaw(),
-                new SwerveModulePosition[] { // Initialize with zeros
-                        new SwerveModulePosition(0, new Rotation2d(0)),
-                        new SwerveModulePosition(0, new Rotation2d(0)),
-                        new SwerveModulePosition(0, new Rotation2d(0)),
-                        new SwerveModulePosition(0, new Rotation2d(0))
-                });
 
         mSwerveMods = new SwerveModule[] {
                 new SwerveModule(0, new ModuleConfig(
@@ -96,73 +63,15 @@ public class Swerve extends SubsystemBase {
                         Constants.Swerve.BR.angleOffset))
         };
 
-        estimateOdometry = new SwerveDrivePoseEstimator(
-                Constants.Swerve.swerveKinematics,
-                gyro.getRotation2d(),
-                getModulePositions(),
-                new Pose2d(new Translation2d(-8.175 + 0.45, 1.4478), new Rotation2d(180)),
-                stateStdDevs,
-                visionMeasurementStdDevs);
+        // estimateOdometry = new SwerveDrivePoseEstimator(
+        //         Constants.Swerve.swerveKinematics,
+        //         gyro.getRotation2d(),
+        //         getModulePositions(),
+        //         new Pose2d(new Translation2d(-8.175 + 0.45, 1.4478), new Rotation2d(180)),
+        //         stateStdDevs,
+        //         visionMeasurementStdDevs);
 
         zeroWheels();
-    }
-
-    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-        SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(
-                fieldRelative
-                        ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                translation.getX(), translation.getY(), rotation, getYaw())
-                        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation));
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
-
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
-        }
-    }
-
-    public Pose2d getPose() {
-        if (Robot.isSimulation()) {
-            return estimateOdometry.getEstimatedPosition();
-        } else {
-            return swerveOdometry.getPoseMeters();
-        }
-    }
-
-    public void resetOdometry(Pose2d pose) {
-        swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
-    }
-
-    public ChassisSpeeds getRobotRelativeSpeeds() {
-        return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModulesStates());
-    }
-
-    public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
-        setModulesStates(Constants.Swerve.swerveKinematics.toSwerveModuleStates(chassisSpeeds));
-    }
-
-    public void setModulesStates(SwerveModuleState[] states) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Swerve.maxSpeed);
-        mSwerveMods[Constants.Swerve.FL.moduleId].setDesiredState(states[Constants.Swerve.FL.moduleId], true);
-        mSwerveMods[Constants.Swerve.FR.moduleId].setDesiredState(states[Constants.Swerve.FR.moduleId], true);
-        mSwerveMods[Constants.Swerve.BL.moduleId].setDesiredState(states[Constants.Swerve.BL.moduleId], true);
-        mSwerveMods[Constants.Swerve.BR.moduleId].setDesiredState(states[Constants.Swerve.BR.moduleId], true);
-    }
-
-    public SwerveModuleState[] getModulesStates() {
-        return new SwerveModuleState[] {
-                mSwerveMods[0].getState(),
-                mSwerveMods[1].getState(),
-                mSwerveMods[2].getState(),
-                mSwerveMods[3].getState(),
-        };
-    }
-
-    private SwerveModulePosition[] getModulePositions() {
-        SwerveModulePosition[] positions = new SwerveModulePosition[mSwerveMods.length];
-        for (int i = 0; i < mSwerveMods.length; i++) {
-            positions[i] = new SwerveModulePosition(mSwerveMods[i].getPosition(), mSwerveMods[i].getAngle());
-        }
-        return positions;
     }
 
     public void zeroGyro() {
@@ -170,20 +79,14 @@ public class Swerve extends SubsystemBase {
     }
 
     public void zeroWheels() {
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setAngle(0,false);
-        }
+        // for (SwerveModule mod : mSwerveMods) {
+        //     mod.setAngle(0,false);
+        // }
         zeroGyro();
     }
 
-    public void resetPose(Pose2d pose) {
-        swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
-    }
-
     public Rotation2d getYaw() {
-        return (Constants.Swerve.Gyroscope.convention == gyroscope_convention.RIGHT_IS_POSITIVE)
-                ? Rotation2d.fromDegrees(-gyro.getYaw())
-                : Rotation2d.fromDegrees(gyro.getYaw());
+        return Rotation2d.fromDegrees(-gyro.getYaw());
     }
 
 
@@ -219,74 +122,79 @@ public class Swerve extends SubsystemBase {
     double botTranslationSpeed = 0.0;
 
     public void update() {
-        if(rotatingToTarget) {
-            if(driving) return;
+        mSwerveMods[0].updateWheelAngle();
+        mSwerveMods[1].updateWheelAngle();
+        mSwerveMods[2].updateWheelAngle();
+        mSwerveMods[3].updateWheelAngle();
+        return;
+        // if(rotatingToTarget) {
+        //     // if(driving) return;
 
-            mSwerveMods[0].setAngle(45+180,false);
-            mSwerveMods[1].setAngle(45+180+90,false); 
-            mSwerveMods[2].setAngle(45+90,false); 
-            mSwerveMods[3].setAngle(45,false); 
-                
-            double currentHeading = -getYaw().getDegrees();
+        //     mSwerveMods[0].setAngle(45+180,false);
+        //     mSwerveMods[1].setAngle(45+180+90,false); 
+        //     mSwerveMods[2].setAngle(45+90,false); 
+        //     mSwerveMods[3].setAngle(45,false); 
+            
+        //     double currentHeading = -getYaw().getDegrees();
         
-            double deltaAngle = targetAngle - currentHeading;
-            double rotationSpeed = deltaAngle / -180.0; // Scale to [-1, 1]
+        //     double deltaAngle = targetAngle - currentHeading;
+        //     double rotationSpeed = deltaAngle / -180.0; // Scale to [-1, 1]
 
-            rotationSpeed = Math.max(-Constants.Swerve.maxWheelRotateSpeed, Math.min(Constants.Swerve.maxWheelRotateSpeed, rotationSpeed));
-            if(deltaAngle < -5) {
-                setAllWheelSpeed(-Math.abs(rotationSpeed));
-            } else if(deltaAngle > 5) {
-                setAllWheelSpeed(Math.abs(rotationSpeed));
-            } else {
-                rotatingToTarget = false;
-                setAllWheelSpeed(0.0);
-            }
+        //     rotationSpeed = Math.max(-Constants.Swerve.maxWheelRotateSpeed, Math.min(Constants.Swerve.maxWheelRotateSpeed, rotationSpeed));
+        //     if(deltaAngle < -5) {
+        //         setAllWheelSpeed(-Math.abs(rotationSpeed));
+        //     } else if(deltaAngle > 5) {
+        //         setAllWheelSpeed(Math.abs(rotationSpeed));
+        //     } else {
+        //         rotatingToTarget = false;
+        //         setAllWheelSpeed(0.0);
+        //     }
 
-            if(!rotatingToTarget) {
-                driving = true;
-                if(botTranslationDegrees != 181.0 && lastBotTranslationDegrees != botTranslationDegrees) {
-                    allWheelsRotatedToTarget = true;
-                    setAllWheelDirection(botTranslationDegrees);
-                }
-                lastBotTranslationDegrees = botTranslationDegrees;
+        //     if(!rotatingToTarget) {
+        //         // driving = true;
+        //         if(botTranslationDegrees != 181.0 && lastBotTranslationDegrees != botTranslationDegrees) {
+        //             allWheelsRotatedToTarget = true;
+        //             setAllWheelDirection(botTranslationDegrees);
+        //         }
+        //         lastBotTranslationDegrees = botTranslationDegrees;
 
-                // Reset to rotation mode if No input on driving translation
-                if(botTranslationSpeed == 0.0) {
-                    setAllWheelRotationSpeed(0.0);
-                    driving = false;
-                }
+        //         // Reset to rotation mode if No input on driving translation
+        //         if(botTranslationSpeed == 0.0) {
+        //             setAllWheelRotationSpeed(0.0);
+        //             driving = false;
+        //         }
 
-                if(allWheelsRotatedToTarget) {
-                    setAllWheelSpeed(botTranslationSpeed);
-                } else {
-                    setAllWheelSpeed(0.0);
-                }
-            }
-        } else {
-            driving = true;
-            if(botTranslationDegrees != 181.0 && lastBotTranslationDegrees != botTranslationDegrees) {
-                allWheelsRotatedToTarget = true;
-                setAllWheelDirection(botTranslationDegrees);
-            }
-            lastBotTranslationDegrees = botTranslationDegrees;
+        //         // if(allWheelsRotatedToTarget) {
+        //             setAllWheelSpeed(botTranslationSpeed);
+        //         // } else {
+        //             // setAllWheelSpeed(0.0);
+        //         // }
+        //     }
+        // } else {
+        //     // driving = true;
+        //     if(botTranslationDegrees != 181.0 && lastBotTranslationDegrees != botTranslationDegrees) {
+        //         allWheelsRotatedToTarget = true;
+        //         setAllWheelDirection(botTranslationDegrees);
+        //     }
+        //     lastBotTranslationDegrees = botTranslationDegrees;
 
-            // Reset to rotation mode if No input on driving translation
-            if(botTranslationSpeed == 0.0) {
-                setAllWheelRotationSpeed(0.0);
-                driving = false;
-            }
+        //     // Reset to rotation mode if No input on driving translation
+        //     if(botTranslationSpeed == 0.0) {
+        //         setAllWheelRotationSpeed(0.0);
+        //         // driving = false;
+        //     }
 
-            if(allWheelsRotatedToTarget) {
-                setAllWheelSpeed(botTranslationSpeed);
-            } else {
-                setAllWheelSpeed(0.0);
-            }
-        }
+        //     // if(allWheelsRotatedToTarget) {
+        //         setAllWheelSpeed(botTranslationSpeed);
+        //     // } else {
+        //         // setAllWheelSpeed(0.0);
+        //     // }
+        // }
 
-        botTranslationSpeed = 0.0;
+        // botTranslationSpeed = 0.0;
     }
 
-    // 0-360
+    // 0-360 turn every wheel in same direction
     public void setBotDirection(double targetAngle) {
         this.targetAngle = targetAngle;
 
@@ -313,9 +221,6 @@ public class Swerve extends SubsystemBase {
     boolean zerod = false;
     @Override
     public void periodic() {
-        swerveOdometry.update(getYaw(), getModulePositions());
-        estimateOdometry.update(getYaw(), getModulePositions());
-
         if(!zerod) {
             gyro.zeroYaw();
             zerod = true;
@@ -324,22 +229,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putData("field", field);
 
         for (SwerveModule mod : mSwerveMods) {
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees()*180);
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Speed", mod.getState().speedMetersPerSecond);
-        }
-
-        boolean doRejectUpdate = false;
-        LimelightHelpers.SetRobotOrientation("", getYaw().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-        if(Math.abs(gyro.getRate()) > 720) {
-            doRejectUpdate = true;
-        }
-        if(mt2.tagCount == 0) {
-            doRejectUpdate = true;
-        }
-        if(!doRejectUpdate) {
-            estimateOdometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
-            estimateOdometry.addVisionMeasurement(mt2.pose,mt2.timestampSeconds);
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.wheelAngle);
         }
     }
 
@@ -356,7 +246,17 @@ public class Swerve extends SubsystemBase {
     }
 
     public void orientToClosestTag() {
+        driving = false;
+
         LimelightAprilTag closest = vision.closestTag;
+        System.out.println(closest.id+" "+closest.xOffset);
+        if(closest.xOffset < 0) {
+            // System.out.println("ANGLE: "+gyro.getAngle()+5);
+            setBotDirection(gyro.getAngle()+6);
+        } else {
+            // System.out.println("ANGLE2: "+gyro.getAngle()+5);
+            setBotDirection(gyro.getAngle()-6);
+        }
     }
 
 }

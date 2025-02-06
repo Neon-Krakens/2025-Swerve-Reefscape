@@ -16,6 +16,7 @@ public class TeleopSwerve extends Command {
         private final DoubleSupplier rotationXSup;
         private final DoubleSupplier rotationYSup;
         private final BooleanSupplier resetGyro;
+        private final BooleanSupplier orientToAprilTag;
 
         public final XboxController driverController;
         private final SlewRateLimiter translationLimiter = new SlewRateLimiter(3.0);
@@ -28,6 +29,7 @@ public class TeleopSwerve extends Command {
                         DoubleSupplier rotationSupX,
                         DoubleSupplier rotationSupY,
                         BooleanSupplier resetGyro,
+                        BooleanSupplier orientToAprilTag,
                         XboxController controller) {
                 this.s_Swerve = s_Swerve;
                 addRequirements(s_Swerve);
@@ -37,6 +39,7 @@ public class TeleopSwerve extends Command {
                 this.rotationXSup = rotationSupX;
                 this.rotationYSup = rotationSupY;
                 this.resetGyro = resetGyro;
+                this.orientToAprilTag = orientToAprilTag;
 
                 this.driverController = controller;
         }
@@ -49,8 +52,12 @@ public class TeleopSwerve extends Command {
                         s_Swerve.zeroWheels();
                         s_Swerve.zeroGyro();
                 }
-                boolean movingMovement = Math.abs(translationSup.getAsDouble()) > 0.1
-                                || Math.abs(strafeSup.getAsDouble()) > 0.1;
+
+                if(orientToAprilTag.getAsBoolean()) {
+                        s_Swerve.orientToClosestTag();
+                        s_Swerve.update();
+                        return;
+                }
 
                 double rotationX = rotationXSup.getAsDouble();
                 double rotationY = rotationYSup.getAsDouble();
