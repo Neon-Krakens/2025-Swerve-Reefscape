@@ -64,14 +64,12 @@ public class Swerve extends SubsystemBase {
         };
 
         // estimateOdometry = new SwerveDrivePoseEstimator(
-        //         Constants.Swerve.swerveKinematics,
-        //         gyro.getRotation2d(),
-        //         getModulePositions(),
-        //         new Pose2d(new Translation2d(-8.175 + 0.45, 1.4478), new Rotation2d(180)),
-        //         stateStdDevs,
-        //         visionMeasurementStdDevs);
-
-        zeroWheels();
+        // Constants.Swerve.swerveKinematics,
+        // gyro.getRotation2d(),
+        // getModulePositions(),
+        // new Pose2d(new Translation2d(-8.175 + 0.45, 1.4478), new Rotation2d(180)),
+        // stateStdDevs,
+        // visionMeasurementStdDevs);
     }
 
     public void zeroGyro() {
@@ -79,21 +77,24 @@ public class Swerve extends SubsystemBase {
     }
 
     public void zeroWheels() {
-        // for (SwerveModule mod : mSwerveMods) {
-        //     mod.setAngle(0,false);
-        // }
-        zeroGyro();
+        boolean allZero = true;
+        for (SwerveModule mod : mSwerveMods) {
+            boolean zerod = mod.zeroWheel();
+            if(!zerod) {
+                allZero = false;
+            }
+        }
+        zerod = allZero;
     }
 
     public Rotation2d getYaw() {
         return Rotation2d.fromDegrees(-gyro.getYaw());
     }
 
-
     public void setAllWheelDirection(double angle) {
         for (SwerveModule mod : mSwerveMods) {
             boolean gotToTarget = mod.setAngle(angle, true);
-            if(!gotToTarget) {
+            if (!gotToTarget) {
                 allWheelsRotatedToTarget = false;
             }
         }
@@ -120,75 +121,80 @@ public class Swerve extends SubsystemBase {
     boolean allWheelsRotatedToTarget = false;
 
     double botTranslationSpeed = 0.0;
+    boolean zerod = false;
 
     public void update() {
-        mSwerveMods[0].updateWheelAngle();
-        mSwerveMods[1].updateWheelAngle();
-        mSwerveMods[2].updateWheelAngle();
-        mSwerveMods[3].updateWheelAngle();
+        if (!zerod) {
+            zeroGyro();
+            zeroWheels();
+            return;
+        }
         return;
         // if(rotatingToTarget) {
-        //     // if(driving) return;
+        // // if(driving) return;
 
-        //     mSwerveMods[0].setAngle(45+180,false);
-        //     mSwerveMods[1].setAngle(45+180+90,false); 
-        //     mSwerveMods[2].setAngle(45+90,false); 
-        //     mSwerveMods[3].setAngle(45,false); 
-            
-        //     double currentHeading = -getYaw().getDegrees();
-        
-        //     double deltaAngle = targetAngle - currentHeading;
-        //     double rotationSpeed = deltaAngle / -180.0; // Scale to [-1, 1]
+        // mSwerveMods[0].setAngle(45+180,false);
+        // mSwerveMods[1].setAngle(45+180+90,false);
+        // mSwerveMods[2].setAngle(45+90,false);
+        // mSwerveMods[3].setAngle(45,false);
 
-        //     rotationSpeed = Math.max(-Constants.Swerve.maxWheelRotateSpeed, Math.min(Constants.Swerve.maxWheelRotateSpeed, rotationSpeed));
-        //     if(deltaAngle < -5) {
-        //         setAllWheelSpeed(-Math.abs(rotationSpeed));
-        //     } else if(deltaAngle > 5) {
-        //         setAllWheelSpeed(Math.abs(rotationSpeed));
-        //     } else {
-        //         rotatingToTarget = false;
-        //         setAllWheelSpeed(0.0);
-        //     }
+        // double currentHeading = -getYaw().getDegrees();
 
-        //     if(!rotatingToTarget) {
-        //         // driving = true;
-        //         if(botTranslationDegrees != 181.0 && lastBotTranslationDegrees != botTranslationDegrees) {
-        //             allWheelsRotatedToTarget = true;
-        //             setAllWheelDirection(botTranslationDegrees);
-        //         }
-        //         lastBotTranslationDegrees = botTranslationDegrees;
+        // double deltaAngle = targetAngle - currentHeading;
+        // double rotationSpeed = deltaAngle / -180.0; // Scale to [-1, 1]
 
-        //         // Reset to rotation mode if No input on driving translation
-        //         if(botTranslationSpeed == 0.0) {
-        //             setAllWheelRotationSpeed(0.0);
-        //             driving = false;
-        //         }
-
-        //         // if(allWheelsRotatedToTarget) {
-        //             setAllWheelSpeed(botTranslationSpeed);
-        //         // } else {
-        //             // setAllWheelSpeed(0.0);
-        //         // }
-        //     }
+        // rotationSpeed = Math.max(-Constants.Swerve.maxWheelRotateSpeed,
+        // Math.min(Constants.Swerve.maxWheelRotateSpeed, rotationSpeed));
+        // if(deltaAngle < -5) {
+        // setAllWheelSpeed(-Math.abs(rotationSpeed));
+        // } else if(deltaAngle > 5) {
+        // setAllWheelSpeed(Math.abs(rotationSpeed));
         // } else {
-        //     // driving = true;
-        //     if(botTranslationDegrees != 181.0 && lastBotTranslationDegrees != botTranslationDegrees) {
-        //         allWheelsRotatedToTarget = true;
-        //         setAllWheelDirection(botTranslationDegrees);
-        //     }
-        //     lastBotTranslationDegrees = botTranslationDegrees;
+        // rotatingToTarget = false;
+        // setAllWheelSpeed(0.0);
+        // }
 
-        //     // Reset to rotation mode if No input on driving translation
-        //     if(botTranslationSpeed == 0.0) {
-        //         setAllWheelRotationSpeed(0.0);
-        //         // driving = false;
-        //     }
+        // if(!rotatingToTarget) {
+        // // driving = true;
+        // if(botTranslationDegrees != 181.0 && lastBotTranslationDegrees !=
+        // botTranslationDegrees) {
+        // allWheelsRotatedToTarget = true;
+        // setAllWheelDirection(botTranslationDegrees);
+        // }
+        // lastBotTranslationDegrees = botTranslationDegrees;
 
-        //     // if(allWheelsRotatedToTarget) {
-        //         setAllWheelSpeed(botTranslationSpeed);
-        //     // } else {
-        //         // setAllWheelSpeed(0.0);
-        //     // }
+        // // Reset to rotation mode if No input on driving translation
+        // if(botTranslationSpeed == 0.0) {
+        // setAllWheelRotationSpeed(0.0);
+        // driving = false;
+        // }
+
+        // // if(allWheelsRotatedToTarget) {
+        // setAllWheelSpeed(botTranslationSpeed);
+        // // } else {
+        // // setAllWheelSpeed(0.0);
+        // // }
+        // }
+        // } else {
+        // // driving = true;
+        // if(botTranslationDegrees != 181.0 && lastBotTranslationDegrees !=
+        // botTranslationDegrees) {
+        // allWheelsRotatedToTarget = true;
+        // setAllWheelDirection(botTranslationDegrees);
+        // }
+        // lastBotTranslationDegrees = botTranslationDegrees;
+
+        // // Reset to rotation mode if No input on driving translation
+        // if(botTranslationSpeed == 0.0) {
+        // setAllWheelRotationSpeed(0.0);
+        // // driving = false;
+        // }
+
+        // // if(allWheelsRotatedToTarget) {
+        // setAllWheelSpeed(botTranslationSpeed);
+        // // } else {
+        // // setAllWheelSpeed(0.0);
+        // // }
         // }
 
         // botTranslationSpeed = 0.0;
@@ -218,19 +224,10 @@ public class Swerve extends SubsystemBase {
         botTranslationDegrees = angleDegrees;
     }
 
-    boolean zerod = false;
     @Override
     public void periodic() {
-        if(!zerod) {
-            gyro.zeroYaw();
-            zerod = true;
-        }
         SmartDashboard.putNumber("Gyro", gyro.getAngle());
         SmartDashboard.putData("field", field);
-
-        for (SwerveModule mod : mSwerveMods) {
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.wheelAngle);
-        }
     }
 
     // From
@@ -249,13 +246,13 @@ public class Swerve extends SubsystemBase {
         driving = false;
 
         LimelightAprilTag closest = vision.closestTag;
-        System.out.println(closest.id+" "+closest.xOffset);
-        if(closest.xOffset < 0) {
+        System.out.println(closest.id + " " + closest.xOffset);
+        if (closest.xOffset < 0) {
             // System.out.println("ANGLE: "+gyro.getAngle()+5);
-            setBotDirection(gyro.getAngle()+6);
+            setBotDirection(gyro.getAngle() + 6);
         } else {
             // System.out.println("ANGLE2: "+gyro.getAngle()+5);
-            setBotDirection(gyro.getAngle()-6);
+            setBotDirection(gyro.getAngle() - 6);
         }
     }
 
