@@ -9,6 +9,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Vision.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.Vision.LimelightHelpers.RawFiducial;
 
 public class Vision extends SubsystemBase {
@@ -31,13 +32,15 @@ public class Vision extends SubsystemBase {
     // fieldLayout.getTagPose(22)
     // );
 
+    // depo tags: 12, 13
+
     public List<AprilTag> tags = fieldLayout.getTags();
 
     public class LimelightAprilTag {
         AprilTag tag;
         public int id;
         public double distFromCamera;
-        public double xOffset;
+        public double xAngleOffset;
 
         public LimelightAprilTag() {
             
@@ -50,7 +53,7 @@ public class Vision extends SubsystemBase {
         RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("");
         for (RawFiducial fiducial : fiducials) {
             int id = fiducial.id; // Tag ID
-            double txnc = fiducial.txnc; // X offset (no crosshair)
+            double txnc = fiducial.txnc; // X offset (no crosshair) degr
             double tync = fiducial.tync; // Y offset (no crosshair)
             double ta = fiducial.ta; // Target area
             double distToCamera = fiducial.distToCamera; // Distance to camera
@@ -59,14 +62,15 @@ public class Vision extends SubsystemBase {
             // System.out.println("ID: " + id + " DIST: " + distToCamera);
 
             closestTag.id = id;
-            closestTag.xOffset = txnc;
+            closestTag.xAngleOffset = txnc;
             closestTag.distFromCamera = distToCamera;
         }
+        LimelightHelpers.getBotPose2d("");
+        LimelightResults results = LimelightHelpers.getLatestResults("");
 
-        // LimelightResults results = LimelightHelpers.getLatestResults("");
-
-        // if (results.valid) {
-        // System.out.println("FOUND A APRIL TAG");
+        if (results.valid) {
+        System.out.println("FOUND A APRIL TAG");
+        }
         // // AprilTags/Fiducials
         // if (results.targets_Fiducials.length > 0) {
         // LimelightTarget_Fiducial tag = results.targets_Fiducials[0];

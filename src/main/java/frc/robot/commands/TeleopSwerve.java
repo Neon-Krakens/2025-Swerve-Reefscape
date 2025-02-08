@@ -54,10 +54,12 @@ public class TeleopSwerve extends Command {
                 }
 
                 if(orientToAprilTag.getAsBoolean()) {
-                        s_Swerve.orientToClosestTag();
                         s_Swerve.update();
+                        s_Swerve.orientToClosestTag();
+                        s_Swerve.pathingToTag = true;
                         return;
                 }
+                s_Swerve.pathingToTag = false;
 
                 double rotationX = rotationXSup.getAsDouble();
                 double rotationY = rotationYSup.getAsDouble();
