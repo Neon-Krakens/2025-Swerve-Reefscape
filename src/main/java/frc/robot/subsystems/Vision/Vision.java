@@ -126,32 +126,32 @@ public class Vision
    *
    * @param swerveDrive {@link SwerveDrive} instance.
    */
-  public void updatePoseEstimation(SwerveDrive swerveDrive)
-  {
-    if (SwerveDriveTelemetry.isSimulation && swerveDrive.getSimulationDriveTrainPose().isPresent())
-    {
-      /*
-       * In the maple-sim, odometry is simulated using encoder values, accounting for factors like skidding and drifting.
-       * As a result, the odometry may not always be 100% accurate.
-       * However, the vision system should be able to provide a reasonably accurate pose estimation, even when odometry is incorrect.
-       * (This is why teams implement vision system to correct odometry.)
-       * Therefore, we must ensure that the actual robot pose is provided in the simulator when updating the vision simulation during the simulation.
-       */
-      visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
-    }
-    for (Cameras camera : Cameras.values())
-    {
-      Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
-      if (poseEst.isPresent())
-      {
-        var pose = poseEst.get();
-        swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
-                                         pose.timestampSeconds,
-                                         camera.curStdDevs);
-      }
-    }
+  // public void updatePoseEstimation(SwerveDrive swerveDrive)
+  // {
+  //   if (SwerveDriveTelemetry.isSimulation && swerveDrive.getSimulationDriveTrainPose().isPresent())
+  //   {
+  //     /*
+  //      * In the maple-sim, odometry is simulated using encoder values, accounting for factors like skidding and drifting.
+  //      * As a result, the odometry may not always be 100% accurate.
+  //      * However, the vision system should be able to provide a reasonably accurate pose estimation, even when odometry is incorrect.
+  //      * (This is why teams implement vision system to correct odometry.)
+  //      * Therefore, we must ensure that the actual robot pose is provided in the simulator when updating the vision simulation during the simulation.
+  //      */
+  //     visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
+  //   }
+  //   for (Cameras camera : Cameras.values())
+  //   {
+  //     Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
+  //     if (poseEst.isPresent())
+  //     {
+  //       var pose = poseEst.get();
+  //       swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
+  //                                        pose.timestampSeconds,
+  //                                        camera.curStdDevs);
+  //     }
+  //   }
 
-  }
+  // }
 
   /**
    * Generates the estimated robot pose. Returns empty if:

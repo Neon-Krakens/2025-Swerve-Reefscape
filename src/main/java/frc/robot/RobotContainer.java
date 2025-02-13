@@ -30,6 +30,8 @@ import swervelib.SwerveInputStream;
  * defined through command bindings and default commands.
  */
 public class RobotContainer {
+
+  
     /** Xbox controller used for driver input. */
     private final CommandXboxController driver = new CommandXboxController(0);
   
@@ -43,14 +45,10 @@ public class RobotContainer {
     private final SwerveInputStream driveInputStream = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
         () -> driver.getLeftY() * -1,
         () -> driver.getLeftX() * -1)
-        .cubeTranslationControllerAxis(true)
-        .scaleTranslation(0.5)
-        .cubeRotationControllerAxis(true)
-        .withControllerHeadingAxis(() -> driver.getRightX() * -1, () -> driver.getRightY() * -1)
-        .cubeRotationControllerAxis(true)
-        .deadband(Constants.DRIVER_DEADBAND)
-        .allianceRelativeControl(true)
-        .headingWhile(true);
+        .withControllerRotationAxis(driver::getRightX)
+      .deadband(Constants.DRIVER_DEADBAND)
+      .scaleTranslation(0.8)
+      .allianceRelativeControl(true);
   
     /**
      * Creates a new RobotContainer and initializes all robot subsystems and commands.
@@ -84,10 +82,10 @@ public class RobotContainer {
   
       driver.x().whileTrue(Commands.runOnce(swerveDrive::lockWheels, swerveDrive).repeatedly());
       driver.start().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
-      driver.back().whileTrue(
-          swerveDrive.driveToPose(
-              new Pose2d(new Translation2d(Meter.of(8.774), Meter.of(4.026)),
-                  Rotation2d.fromDegrees(0))));
+      // driver.back().whileTrue(
+      //     swerveDrive.driveToPose(
+      //         new Pose2d(new Translation2d(Meter.of(8.774), Meter.of(4.026)),
+      //             Rotation2d.fromDegrees(0))));
     }
   
     /**

@@ -16,7 +16,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.subsystems.Vision.Vision;
+// import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Vision.Vision.Cameras;
+// import frc.robot.subsystems.Vision.Vision.Cameras;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveMath;
 
@@ -62,14 +63,14 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 public class Swerve extends SubsystemBase {
     private static Swerve instance;
     private final SwerveDrive swerveDrive;
-    /**
-     * Enable vision odometry updates while driving.
-     */
-    private final boolean visionDriveTest = false;
-    /**
-     * PhotonVision class to keep an accurate odometry.
-     */
-    private Vision vision;
+    // /**
+    //  * Enable vision odometry updates while driving.
+    //  */
+    // private final boolean visionDriveTest = false;
+    // /**
+    //  * PhotonVision class to keep an accurate odometry.
+    //  */
+    // private Vision vision;
 
     /**
      * Returns the singleton instance of the Swerve subsystem.
@@ -104,18 +105,18 @@ public class Swerve extends SubsystemBase {
             throw new RuntimeException("Failed to create swerve drive", e);
         }
 
-        swerveDrive.setHeadingCorrection(true);
+        swerveDrive.setHeadingCorrection(false);
         swerveDrive.setAngularVelocityCompensation(true, true, 0.1);
         swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation);
         swerveDrive.setModuleEncoderAutoSynchronize(true, 1);
         swerveDrive.pushOffsetsToEncoders();
 
-        if (visionDriveTest) {
-            setupPhotonVision();
-            // Stop the odometry thread if we are using vision that way we can synchronize
-            // updates better.
-            swerveDrive.stopOdometryThread();
-        }
+        // if (visionDriveTest) {
+        //     setupPhotonVision();
+        //     // Stop the odometry thread if we are using vision that way we can synchronize
+        //     // updates better.
+        //     swerveDrive.stopOdometryThread();
+        // }
         setupPathPlanner();
     }
 
@@ -171,7 +172,7 @@ public class Swerve extends SubsystemBase {
      * @return A {@link Command} which will run the alignment.
      */
     public Command aimAtTarget(Cameras camera) {
-
+        System.out.println("IM RUNNING 1");
         return run(() -> {
             Optional<PhotonPipelineResult> resultO = camera.getBestResult();
             if (resultO.isPresent()) {
@@ -189,18 +190,18 @@ public class Swerve extends SubsystemBase {
     /**
      * Setup the photon vision class.
      */
-    public void setupPhotonVision() {
-        vision = new Vision(swerveDrive::getPose, swerveDrive.field);
-    }
+    // public void setupPhotonVision() {
+    //     vision = new Vision(swerveDrive::getPose, swerveDrive.field);
+    // }
 
-    @Override
-    public void periodic() {
-        // When vision is enabled we must manually update odometry in SwerveDrive
-        if (visionDriveTest) {
-            swerveDrive.updateOdometry();
-            vision.updatePoseEstimation(swerveDrive);
-        }
-    }
+    // @Override
+    // public void periodic() {
+    //     // When vision is enabled we must manually update odometry in SwerveDrive
+    //     if (visionDriveTest) {
+    //         swerveDrive.updateOdometry();
+    //         vision.updatePoseEstimation(swerveDrive);
+    //     }
+    // }
 
     /**
      * Creates a command to drive the robot in field-oriented mode.
@@ -214,6 +215,8 @@ public class Swerve extends SubsystemBase {
      * @see ChassisSpeeds
      */
     public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity) {
+        System.out.println("IM RUNNING 6");
+
         return run(() -> swerveDrive.driveFieldOriented(velocity.get()));
     }
 
@@ -222,6 +225,8 @@ public class Swerve extends SubsystemBase {
      * Useful for maintaining position or preparing for disable.
      */
     public void lockWheels() {
+        System.out.println("IM RUNNING 2");
+
         swerveDrive.lockPose();
     }
 
@@ -278,6 +283,8 @@ public class Swerve extends SubsystemBase {
      * @return a Command that will drive the robot to the specified pose
      */
     public Command driveToPose(Pose2d pose) {
+        System.out.println("IM RUNNING 3");
+
         PathConstraints constraints = new PathConstraints(
                 swerveDrive.getMaximumChassisVelocity(), 4.0,
                 swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
@@ -357,6 +364,8 @@ public class Swerve extends SubsystemBase {
    */
   public void drive(Translation2d translation, double rotation, boolean fieldRelative)
   {
+    System.out.println("IM RUNNING 4");
+
     swerveDrive.drive(translation,
                       rotation,
                       fieldRelative,
@@ -370,6 +379,8 @@ public class Swerve extends SubsystemBase {
    */
   public void drive(ChassisSpeeds velocity)
   {
+    System.out.println("IM RUNNING 5");
+
     swerveDrive.drive(velocity);
   }
 }
