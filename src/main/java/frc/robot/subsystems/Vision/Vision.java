@@ -33,6 +33,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
+import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -52,7 +53,7 @@ public class Vision
   /**
    * April Tag Field Layout of the year.
    */
-  public static final AprilTagFieldLayout fieldLayout= AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+  public static final AprilTagFieldLayout fieldLayout= AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
   /**
    * Ambiguity defined as a value between (0,1). Used in {@link Vision#filterPose}.
    */
@@ -126,32 +127,32 @@ public class Vision
    *
    * @param swerveDrive {@link SwerveDrive} instance.
    */
-  // public void updatePoseEstimation(SwerveDrive swerveDrive)
-  // {
-  //   if (SwerveDriveTelemetry.isSimulation && swerveDrive.getSimulationDriveTrainPose().isPresent())
-  //   {
-  //     /*
-  //      * In the maple-sim, odometry is simulated using encoder values, accounting for factors like skidding and drifting.
-  //      * As a result, the odometry may not always be 100% accurate.
-  //      * However, the vision system should be able to provide a reasonably accurate pose estimation, even when odometry is incorrect.
-  //      * (This is why teams implement vision system to correct odometry.)
-  //      * Therefore, we must ensure that the actual robot pose is provided in the simulator when updating the vision simulation during the simulation.
-  //      */
-  //     visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
-  //   }
-  //   for (Cameras camera : Cameras.values())
-  //   {
-  //     Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
-  //     if (poseEst.isPresent())
-  //     {
-  //       var pose = poseEst.get();
-  //       swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
-  //                                        pose.timestampSeconds,
-  //                                        camera.curStdDevs);
-  //     }
-  //   }
+  public void updatePoseEstimation(SwerveDrive swerveDrive)
+  {
+    if (SwerveDriveTelemetry.isSimulation && swerveDrive.getSimulationDriveTrainPose().isPresent())
+    {
+      /*
+       * In the maple-sim, odometry is simulated using encoder values, accounting for factors like skidding and drifting.
+       * As a result, the odometry may not always be 100% accurate.
+       * However, the vision system should be able to provide a reasonably accurate pose estimation, even when odometry is incorrect.
+       * (This is why teams implement vision system to correct odometry.)
+       * Therefore, we must ensure that the actual robot pose is provided in the simulator when updating the vision simulation during the simulation.
+       */
+      visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
+    }
+    for (Cameras camera : Cameras.values())
+    {
+      Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
+      if (poseEst.isPresent())
+      {
+        var pose = poseEst.get();
+        swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
+                                         pose.timestampSeconds,
+                                         camera.curStdDevs);
+      }
+    }
 
-  // }
+  }
 
   /**
    * Generates the estimated robot pose. Returns empty if:
@@ -302,7 +303,6 @@ public class Vision
    */
   public void updateVisionField()
   {
-
     List<PhotonTrackedTarget> targets = new ArrayList<PhotonTrackedTarget>();
     for (Cameras c : Cameras.values())
     {
@@ -311,6 +311,7 @@ public class Vision
         PhotonPipelineResult latest = c.resultsList.get(0);
         if (latest.hasTargets())
         {
+          System.out.println("ADDING TARGET");
           targets.addAll(latest.targets);
         }
       }
@@ -321,6 +322,8 @@ public class Vision
     {
       if (fieldLayout.getTagPose(target.getFiducialId()).isPresent())
       {
+        System.out.println("ADDING TARGET POSE");
+
         Pose2d targetPose = fieldLayout.getTagPose(target.getFiducialId()).get().toPose2d();
         poses.add(targetPose);
       }
@@ -406,6 +409,8 @@ public class Vision
       latencyAlert = new Alert("'" + name + "' Camera is experiencing high latency.", AlertType.kWarning);
 
       camera = new PhotonCamera(name);
+
+      camera.setLED(VisionLEDMode.kBlink);
 
       // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
       robotToCamTransform = new Transform3d(robotToCamTranslation, robotToCamRotation);

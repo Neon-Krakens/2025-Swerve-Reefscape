@@ -1,6 +1,9 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -42,6 +45,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    int estimatedPercentage = (int) ((RobotController.getBatteryVoltage() - 11.3) / (12.8 - 11.3) * 100.0);
+    SmartDashboard.putString("Est. Battery", estimatedPercentage+"%");
   }
 
   /** Called once when the robot is disabled. */

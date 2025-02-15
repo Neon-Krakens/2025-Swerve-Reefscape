@@ -16,7 +16,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-// import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Vision.Vision.Cameras;
-// import frc.robot.subsystems.Vision.Vision.Cameras;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveMath;
 
@@ -63,14 +62,14 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 public class Swerve extends SubsystemBase {
     private static Swerve instance;
     private final SwerveDrive swerveDrive;
-    // /**
-    //  * Enable vision odometry updates while driving.
-    //  */
-    // private final boolean visionDriveTest = false;
-    // /**
-    //  * PhotonVision class to keep an accurate odometry.
-    //  */
-    // private Vision vision;
+    /**
+     * Enable vision odometry updates while driving.
+     */
+    private final boolean visionDriveTest = true;
+    /**
+     * PhotonVision class to keep an accurate odometry.
+     */
+    private Vision vision;
 
     /**
      * Returns the singleton instance of the Swerve subsystem.
@@ -111,12 +110,12 @@ public class Swerve extends SubsystemBase {
         swerveDrive.setModuleEncoderAutoSynchronize(true, 1);
         swerveDrive.pushOffsetsToEncoders();
 
-        // if (visionDriveTest) {
-        //     setupPhotonVision();
-        //     // Stop the odometry thread if we are using vision that way we can synchronize
-        //     // updates better.
-        //     swerveDrive.stopOdometryThread();
-        // }
+        if (visionDriveTest) {
+            setupPhotonVision();
+            // Stop the odometry thread if we are using vision that way we can synchronize
+            // updates better.
+            swerveDrive.stopOdometryThread();
+        }
         setupPathPlanner();
     }
 
@@ -190,18 +189,20 @@ public class Swerve extends SubsystemBase {
     /**
      * Setup the photon vision class.
      */
-    // public void setupPhotonVision() {
-    //     vision = new Vision(swerveDrive::getPose, swerveDrive.field);
-    // }
+    public void setupPhotonVision() {
+        System.out.println("Setting Up Photon Vision");
 
-    // @Override
-    // public void periodic() {
-    //     // When vision is enabled we must manually update odometry in SwerveDrive
-    //     if (visionDriveTest) {
-    //         swerveDrive.updateOdometry();
-    //         vision.updatePoseEstimation(swerveDrive);
-    //     }
-    // }
+        vision = new Vision(swerveDrive::getPose, swerveDrive.field);
+    }
+
+    @Override
+    public void periodic() {
+        // When vision is enabled we must manually update odometry in SwerveDrive
+        if (visionDriveTest) {
+            swerveDrive.updateOdometry();
+            vision.updatePoseEstimation(swerveDrive);
+        }
+    }
 
     /**
      * Creates a command to drive the robot in field-oriented mode.
@@ -235,8 +236,8 @@ public class Swerve extends SubsystemBase {
      * This is typically used at the start of autonomous routines.
      */
     public void resetOdometry() {
-        swerveDrive.resetOdometry(new Pose2d(new Translation2d(Meter.of(8.774), Meter.of(4.026)),
-                Rotation2d.fromDegrees(0)));
+        swerveDrive.zeroGyro();
+        swerveDrive.resetOdometry(new Pose2d(new Translation2d(Meter.of(8.774), Meter.of(4.026)),Rotation2d.fromDegrees(0)));
     }
 
     /**
