@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ElevatorController;
 import frc.robot.subsystems.Drivetrain.Swerve;
 import frc.robot.subsystems.Lighting.LightSubsystem;
+import frc.robot.subsystems.Vision.Vision.Cameras;
 import swervelib.SwerveInputStream;
 
 /**
@@ -48,10 +49,15 @@ public class RobotContainer {
   private final SwerveInputStream driveInputStream = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
       () -> driver.getLeftY() * -1,
       () -> driver.getLeftX() * -1)
-      .withControllerRotationAxis(driver::getRightX)
+      .cubeTranslationControllerAxis(true)
+      .scaleTranslation(0.5)
+      .cubeRotationControllerAxis(true)
+      .withControllerHeadingAxis(() -> driver.getRightX() * -1, () -> driver.getRightY() * -1)
+      .cubeRotationControllerAxis(true)
       .deadband(Constants.DRIVER_DEADBAND)
-      .scaleTranslation(0.8)
-      .allianceRelativeControl(true);
+      .allianceRelativeControl(true)
+      .headingWhile(true);
+      
 
   /**
    * Creates a new RobotContainer and initializes all robot subsystems and
@@ -86,6 +92,8 @@ public class RobotContainer {
 
     driver.x().whileTrue(Commands.runOnce(swerveDrive::lockWheels, swerveDrive).repeatedly());
     driver.y().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
+
+    driver.b().toggleOnTrue(swerveDrive.aimAtTarget(Cameras.CENTER_CAM));
 
     driver.leftBumper().toggleOnTrue(Commands.runOnce(elevator::goDownLevel,elevator));
     driver.rightBumper().toggleOnTrue(Commands.runOnce(elevator::goUpLevel,elevator));

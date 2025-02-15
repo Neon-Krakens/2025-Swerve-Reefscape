@@ -38,7 +38,7 @@ public class ElevatorController extends SubsystemBase {
         rightConfig = new SparkMaxConfig();
         rightConfig.follow(leftLift, true);
         rightLift.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        leftLift.getEncoder().setPosition(0.0);
+        //leftLift.getEncoder().setPosition(0.0); // Only zero elevator after work is done on it
 
         SmartDashboard.putBoolean("Reset Elevator", false);
     }
@@ -63,7 +63,6 @@ public class ElevatorController extends SubsystemBase {
 
         // Stop if position is close
         double distance = target - position;
-        System.out.println("CURRENT: " + position + " TARGET: " + target + " DIST:" + distance);
 
         if (Math.abs(distance) < 5) {// || (LimitSwitchBottom.get() || LimitSwitchTop.get())) {
             leftLift.set(0.0);
@@ -74,8 +73,9 @@ public class ElevatorController extends SubsystemBase {
         double speed = distance / 630.0; // 
         speed = -speed; // Invert motor, and make slowest speed 0.1
         if(speed < 0 && speed > -0.1) speed = -0.1;
-        if(speed > 0 && speed < 0.1) speed = 0.1;
+        if(speed > 0 && speed < 0.2) speed = 0.2;
 
+        System.out.println("ELEVATOR SPEED:"+speed);
         leftLift.set(speed);
     }
 

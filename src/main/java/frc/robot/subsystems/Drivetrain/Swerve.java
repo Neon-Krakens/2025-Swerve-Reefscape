@@ -171,16 +171,17 @@ public class Swerve extends SubsystemBase {
      * @return A {@link Command} which will run the alignment.
      */
     public Command aimAtTarget(Cameras camera) {
-        System.out.println("IM RUNNING 1");
         return run(() -> {
             Optional<PhotonPipelineResult> resultO = camera.getBestResult();
             if (resultO.isPresent()) {
                 var result = resultO.get();
                 if (result.hasTargets()) {
+                    System.out.println("HAS TARGETS: "+result.targets.size());
+                    System.out.println("TARGETS: "+result.getTargets().toString());
+                    
                     drive(getTargetSpeeds(0,
                             0,
-                            Rotation2d.fromDegrees(result.getBestTarget()
-                                    .getYaw()))); // Not sure if this will work, more math may be required.
+                            Rotation2d.fromDegrees(result.getBestTarget().getYaw()))); // Not sure if this will work, more math may be required.
                 }
             }
         });
@@ -216,8 +217,6 @@ public class Swerve extends SubsystemBase {
      * @see ChassisSpeeds
      */
     public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity) {
-        System.out.println("IM RUNNING 6");
-
         return run(() -> swerveDrive.driveFieldOriented(velocity.get()));
     }
 
@@ -226,8 +225,6 @@ public class Swerve extends SubsystemBase {
      * Useful for maintaining position or preparing for disable.
      */
     public void lockWheels() {
-        System.out.println("IM RUNNING 2");
-
         swerveDrive.lockPose();
     }
 
@@ -284,8 +281,6 @@ public class Swerve extends SubsystemBase {
      * @return a Command that will drive the robot to the specified pose
      */
     public Command driveToPose(Pose2d pose) {
-        System.out.println("IM RUNNING 3");
-
         PathConstraints constraints = new PathConstraints(
                 swerveDrive.getMaximumChassisVelocity(), 4.0,
                 swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
@@ -365,8 +360,6 @@ public class Swerve extends SubsystemBase {
    */
   public void drive(Translation2d translation, double rotation, boolean fieldRelative)
   {
-    System.out.println("IM RUNNING 4");
-
     swerveDrive.drive(translation,
                       rotation,
                       fieldRelative,
@@ -380,8 +373,6 @@ public class Swerve extends SubsystemBase {
    */
   public void drive(ChassisSpeeds velocity)
   {
-    System.out.println("IM RUNNING 5");
-
     swerveDrive.drive(velocity);
   }
 }
