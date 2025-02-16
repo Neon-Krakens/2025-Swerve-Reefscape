@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.3532873376623378,
+        "y": 7.066335227272727
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1003305434259283,
+        "y": 6.520852460613268
+      },
+      "isLocked": false,
+      "linkedName": "Drop 1"
+    },
+    {
+      "anchor": {
+        "x": 3.7607142857142857,
+        "y": 5.150365259740259
+      },
+      "prevControl": {
+        "x": 2.979886793561329,
+        "y": 5.707132201555346
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "K"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 29.649863507575503
+  },
+  "reversed": false,
+  "folder": "Drop 1 to AB IJ KL ",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 126.78079075110101
+  },
+  "useDefaultConstraints": true
+}

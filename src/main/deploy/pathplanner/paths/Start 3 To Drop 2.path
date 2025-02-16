@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.148214285714285,
+        "y": 5.0150365259740255
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.780681818181818,
+        "y": 3.1631696428571425
+      },
+      "isLocked": false,
+      "linkedName": "Start 3"
+    },
+    {
+      "anchor": {
+        "x": 1.1681006493506494,
+        "y": 1.0548904220779218
+      },
+      "prevControl": {
+        "x": 3.504301948051948,
+        "y": 1.4751217532467535
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Drop 2"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -127.33319573818581
+  },
+  "reversed": false,
+  "folder": "Start To Drops",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": false
+}

@@ -55,17 +55,9 @@ public class Vision
    */
   public static final AprilTagFieldLayout fieldLayout= AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
   /**
-   * Ambiguity defined as a value between (0,1). Used in {@link Vision#filterPose}.
-   */
-  private final       double              maximumAmbiguity                = 0.25;
-  /**
    * Photon Vision Simulation
    */
   public              VisionSystemSim     visionSim;
-  /**
-   * Count of times that the odom thinks we're more than 10meters away from the april tag.
-   */
-  private             double              longDistangePoseEstimationCount = 0;
   /**
    * Current pose from the pose estimator using wheel odometry.
    */
@@ -182,54 +174,6 @@ public class Vision
     return poseEst;
   }
 
-
-  /**
-   * Filter pose via the ambiguity and find best estimate between all of the camera's throwing out distances more than
-   * 10m for a short amount of time.
-   *
-   * @param pose Estimated robot pose.
-   * @return Could be empty if there isn't a good reading.
-   */
-  @Deprecated(since = "2024", forRemoval = true)
-  private Optional<EstimatedRobotPose> filterPose(Optional<EstimatedRobotPose> pose)
-  {
-    if (pose.isPresent())
-    {
-      double bestTargetAmbiguity = 1; // 1 is max ambiguity
-      for (PhotonTrackedTarget target : pose.get().targetsUsed)
-      {
-        double ambiguity = target.getPoseAmbiguity();
-        if (ambiguity != -1 && ambiguity < bestTargetAmbiguity)
-        {
-          bestTargetAmbiguity = ambiguity;
-        }
-      }
-      //ambiguity to high dont use estimate
-      if (bestTargetAmbiguity > maximumAmbiguity)
-      {
-        return Optional.empty();
-      }
-
-      //est pose is very far from recorded robot pose
-      if (PhotonUtils.getDistanceToPose(currentPose.get(), pose.get().estimatedPose.toPose2d()) > 1)
-      {
-        longDistangePoseEstimationCount++;
-
-        //if it calculates that were 10 meter away for more than 10 times in a row its probably right
-        if (longDistangePoseEstimationCount < 10)
-        {
-          return Optional.empty();
-        }
-      } else
-      {
-        longDistangePoseEstimationCount = 0;
-      }
-      return pose;
-    }
-    return Optional.empty();
-  }
-
-
   /**
    * Get distance of the robot from the AprilTag pose.
    *
@@ -268,6 +212,7 @@ public class Vision
     return target;
 
   }
+  
 
   /**
    * Vision simulation.
@@ -301,8 +246,7 @@ public class Vision
   /**
    * Update the {@link Field2d} to include tracked targets/
    */
-  public void updateVisionField()
-  {
+  public void updateVisionField() {
     List<PhotonTrackedTarget> targets = new ArrayList<PhotonTrackedTarget>();
     for (Cameras c : Cameras.values())
     {
@@ -311,7 +255,6 @@ public class Vision
         PhotonPipelineResult latest = c.resultsList.get(0);
         if (latest.hasTargets())
         {
-          System.out.println("ADDING TARGET");
           targets.addAll(latest.targets);
         }
       }
@@ -322,8 +265,6 @@ public class Vision
     {
       if (fieldLayout.getTagPose(target.getFiducialId()).isPresent())
       {
-        System.out.println("ADDING TARGET POSE");
-
         Pose2d targetPose = fieldLayout.getTagPose(target.getFiducialId()).get().toPose2d();
         poses.add(targetPose);
       }
@@ -462,12 +403,11 @@ public class Vision
      */
     public Optional<PhotonPipelineResult> getBestResult()
     {
-      if (resultsList.isEmpty())
-      {
+      if (resultsList.isEmpty()) {
         return Optional.empty();
       }
-
       PhotonPipelineResult bestResult       = resultsList.get(0);
+      if(!bestResult.hasTargets()) return Optional.empty();
       double               amiguity         = bestResult.getBestTarget().getPoseAmbiguity();
       double               currentAmbiguity = 0;
       for (PhotonPipelineResult result : resultsList)
@@ -617,7 +557,9 @@ public class Vision
       }
     }
 
-
+    public AprilTagFieldLayout getFieldLayout() {
+      return Vision.fieldLayout;
+    }
   }
 
 }

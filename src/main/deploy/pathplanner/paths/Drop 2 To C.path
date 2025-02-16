@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.2179586038961039,
+        "y": 1.0335227272727274
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.176294439443095,
+        "y": 1.9682722140073814
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.881797889610389,
+        "y": 2.807041396103896
+      },
+      "prevControl": {
+        "x": 3.039889979931387,
+        "y": 2.2200709581032543
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 148.07912378006682
+  },
+  "reversed": false,
+  "folder": "Drop 2 to CD EF",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -126.55247275209153
+  },
+  "useDefaultConstraints": true
+}

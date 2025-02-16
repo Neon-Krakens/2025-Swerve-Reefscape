@@ -1,5 +1,10 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meter;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -55,9 +60,8 @@ public class RobotContainer {
       .withControllerHeadingAxis(() -> driver.getRightX() * -1, () -> driver.getRightY() * -1)
       .cubeRotationControllerAxis(true)
       .deadband(Constants.DRIVER_DEADBAND)
-      .allianceRelativeControl(true)
+      .allianceRelativeControl(false)
       .headingWhile(true);
-      
 
   /**
    * Creates a new RobotContainer and initializes all robot subsystems and
@@ -90,18 +94,14 @@ public class RobotContainer {
     Command driveFieldOrientedDirectAngle = swerveDrive.driveFieldOriented(driveInputStream);
     swerveDrive.setDefaultCommand(driveFieldOrientedDirectAngle);
 
-    driver.x().whileTrue(Commands.runOnce(swerveDrive::lockWheels, swerveDrive).repeatedly());
     driver.y().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
 
-    driver.b().toggleOnTrue(swerveDrive.aimAtTarget(Cameras.CENTER_CAM));
+    driver.b().whileTrue(swerveDrive.goToClosestCoralTag());
 
-    driver.leftBumper().toggleOnTrue(Commands.runOnce(elevator::goDownLevel,elevator));
-    driver.rightBumper().toggleOnTrue(Commands.runOnce(elevator::goUpLevel,elevator));
+    driver.leftBumper().toggleOnTrue(Commands.runOnce(elevator::goDownLevel, elevator));
+    driver.rightBumper().toggleOnTrue(Commands.runOnce(elevator::goUpLevel, elevator));
 
-    // driver.back().whileTrue(
-    // swerveDrive.driveToPose(
-    // new Pose2d(new Translation2d(Meter.of(8.774), Meter.of(4.026)),
-    // Rotation2d.fromDegrees(0))));
+    // driver.a().whileTrue(swerveDrive.driveToPose(new Pose2d(new Translation2d(Meter.of(8.774), Meter.of(4.026)), Rotation2d.fromDegrees(0))));
   }
 
   /**
@@ -112,6 +112,7 @@ public class RobotContainer {
    * @return the command to run in autonomous mode
    */
   public Command getAutonomousCommand() {
+
     return Commands.print("No autonomous command configured");
   }
 }

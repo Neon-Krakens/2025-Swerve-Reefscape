@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -17,13 +19,13 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.Vision.Vision;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Vision.Vision.Cameras;
@@ -176,16 +178,62 @@ public class Swerve extends SubsystemBase {
             if (resultO.isPresent()) {
                 var result = resultO.get();
                 if (result.hasTargets()) {
-                    System.out.println("HAS TARGETS: "+result.targets.size());
-                    System.out.println("TARGETS: "+result.getTargets().toString());
+                    System.out.println("BEST TARGET: "+result.getBestTarget().fiducialId);
                     
-                    drive(getTargetSpeeds(0,
-                            0,
-                            Rotation2d.fromDegrees(result.getBestTarget().getYaw()))); // Not sure if this will work, more math may be required.
+                    drive(getTargetSpeeds(0,0, Rotation2d.fromDegrees(result.getBestTarget().getYaw()))); // Not sure if this will work, more math may be required.
                 }
             }
         });
     }
+    // ID 17: 3.82665265066028, 2.892707548812102, 60.123940267858615
+    // ID 18: 3.177104680315848, 4.019763460677997, 0.035054132592455205
+    // ID 19: 3.79086396253783, 5.179714612422249, -60.64281358797446
+    // ID 20: 5.1367311663558395, 5.194172085976124, -120.9505884452377
+    // ID 21: 5.78595090086809, 4.021882830842056, 179.89661505575071
+    // ID 22: 5.149234456259311, 2.9065265281854242, 121.24084087080759
+    
+    public Command goToClosestCoralTag() {
+        return run(() -> {
+            System.out.println("Going to Coral");
+            Cameras camera = Cameras.CENTER_CAM;
+            List<Pose2d> poses = new ArrayList<>();
+            
+            // Collect the valid coral tag poses
+            camera.getFieldLayout().getTags().forEach(tag -> {
+                Pose2d pose = tag.pose.toPose2d();
+                if(tag.ID == 17 || tag.ID == 18 || tag.ID == 19 || tag.ID == 20 || tag.ID == 21 || tag.ID == 22) {
+
+                    pose = pose.rotateAround(pose.getTranslation(), Rotation2d.fromDegrees(180)); 
+
+                    Rotation2d rotation = pose.getRotation();
+                    double angle = rotation.getRadians();
+
+                    // Calculate the change in position
+                    double deltaX = (-0.5) * Math.cos(angle);
+                    double deltaY = (-0.5) * Math.sin(angle);
+            
+                    Pose2d newPose = new Pose2d(pose.getX() + deltaX, pose.getY() + deltaY, pose.getRotation());
+
+                    poses.add(newPose);
+                }
+            });
+            swerveDrive.field.getObject("TAGS").setPoses(poses);
+    
+            // Find the closest coral tag
+            Pose2d closestCoral = this.getPose().nearest(poses);
+
+            // Schedule the robot to move to the new adjusted pose
+            CommandScheduler.getInstance().schedule(driveToPose(closestCoral));
+        });
+    }
+
+    // public Command alignLeftSide() {
+    //     return run(() -> {
+    //         swerveDrive.drive(new Translation2d(0, 0.5), 0, false, false);
+    //     }).withTimeout(0.5); // Adjust time as needed
+    // }
+
+    
 
     /**
      * Setup the photon vision class.
@@ -202,6 +250,7 @@ public class Swerve extends SubsystemBase {
         if (visionDriveTest) {
             swerveDrive.updateOdometry();
             vision.updatePoseEstimation(swerveDrive);
+            vision.updateVisionField();
         }
     }
 
@@ -284,7 +333,7 @@ public class Swerve extends SubsystemBase {
         PathConstraints constraints = new PathConstraints(
                 swerveDrive.getMaximumChassisVelocity(), 4.0,
                 swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
-
+        
         return AutoBuilder.pathfindToPose(
                 pose,
                 constraints,
