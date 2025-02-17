@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1681006493506494,
-        "y": 1.0548904220779218
+        "x": 8.13396915584414,
+        "y": 7.265767045458033
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.2450487012987015,
-        "y": 1.175974025974025
+        "x": 5.310905544574343,
+        "y": 7.279673762751524
       },
-      "isLocked": false,
-      "linkedName": "Drop 2"
+      "isLocked": true,
+      "linkedName": "Start 1"
     },
     {
       "anchor": {
-        "x": 5.854748376623377,
-        "y": 4.3526379870129865
+        "x": 4.8077313311688314,
+        "y": 5.378287337662337
       },
       "prevControl": {
-        "x": 7.606899350649351,
-        "y": 1.9808238636363638
+        "x": 5.591213474025972,
+        "y": 7.529301948051948
       },
       "nextControl": null,
-      "isLocked": false,
-      "linkedName": "H"
+      "isLocked": true,
+      "linkedName": "J"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -30.51023740611543
   },
   "reversed": false,
-  "folder": "Drop 2 to CD EF GH",
+  "folder": "Start 1 to IJKL",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -127.33319573818581
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

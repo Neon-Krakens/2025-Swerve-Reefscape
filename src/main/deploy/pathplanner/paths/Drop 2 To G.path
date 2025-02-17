@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2179586038961039,
-        "y": 1.0335227272727274
+        "x": 1.1681006493506494,
+        "y": 1.0548904220779218
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.294906655844156,
-        "y": 1.1546063311688306
+        "x": 4.2450487012987015,
+        "y": 1.175974025974025
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Drop 2"
     },
     {
       "anchor": {
-        "x": 5.847625811688312,
-        "y": 4.074857954545454
+        "x": 5.840503246753246,
+        "y": 4.103348214285714
       },
       "prevControl": {
-        "x": 6.111160714285715,
-        "y": 2.3440746753246735
+        "x": 6.787804383116883,
+        "y": 2.002191558441558
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "G"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -89.1815445383114
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Drop 2 to CD EF",
+  "folder": "Drop 2 to CD EF GH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -126.55247275209153
+    "rotation": -127.33319573818581
   },
   "useDefaultConstraints": true
 }

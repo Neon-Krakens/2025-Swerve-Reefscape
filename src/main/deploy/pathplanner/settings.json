@@ -4,14 +4,13 @@
   "holonomicMode": true,
   "pathFolders": [
     "Drop 1 to AB IJ KL ",
-    "Drop 2 to CD EF",
+    "Drop 2 to CD EF GH",
+    "Start 3 to GHEF",
+    "Start 1 to IJKL",
+    "Start 2 to GHJI",
     "Start To Drops"
   ],
-  "autoFolders": [
-    "Start 3",
-    "Start 1",
-    "Start 2"
-  ],
+  "autoFolders": [],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,

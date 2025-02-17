@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Drivetrain;
+package frc.robot.subsystems.Bot;
 
 import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Vision.Vision.Cameras;
 import swervelib.SwerveDrive;
+import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveMath;
 
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -391,6 +392,10 @@ public class Swerve extends SubsystemBase {
      */
     public Rotation2d getHeading() {
         return getPose().getRotation();
+    }
+
+    public Rotation2d getGyro() {
+        return swerveDrive.imuReadingCache.getValue().toRotation2d();
     }
 
     /**
