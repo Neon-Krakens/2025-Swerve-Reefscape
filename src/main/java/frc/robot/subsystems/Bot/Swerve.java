@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Vision.Vision.Cameras;
@@ -33,7 +35,10 @@ import swervelib.SwerveDrive;
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveMath;
 
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
@@ -192,6 +197,97 @@ public class Swerve extends SubsystemBase {
     // ID 20: 5.1367311663558395, 5.194172085976124, -120.9505884452377
     // ID 21: 5.78595090086809, 4.021882830842056, 179.89661505575071
     // ID 22: 5.149234456259311, 2.9065265281854242, 121.24084087080759
+    boolean isAligned = false;
+    public Command goToLeft() {
+        return new FunctionalCommand(
+            () -> {
+                
+            },
+            () -> {
+                Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
+                if (tag.isPresent()) {
+                    PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
+                        .max(Comparator.comparingDouble(target -> target.area))
+                        .orElse(null);
+                    System.out.println("CLOSEST TARGET: " + closestTarget.fiducialId);
+
+                    double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
+                    System.out.println("OFFSET: " + CROSSHAIROFFSET);
+
+                    // Move towards target
+                    if (CROSSHAIROFFSET > -110) {
+                        swerveDrive.drive(new Translation2d(0.1, 0), 0, false, false);
+                    } else {
+                        swerveDrive.drive(new Translation2d(0, 0), 0, false, false);
+                    }
+                }
+            },
+            interrupted -> {
+            },
+            () -> {
+                Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
+                if (tag.isPresent()) {
+                    PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
+                        .max(Comparator.comparingDouble(target -> target.area))
+                        .orElse(null);
+
+                    double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
+                    // Command finishes if the target is within the threshold
+                    return CROSSHAIROFFSET <= -110;
+                }
+                return false;
+            }, // Ends when at the target
+            this
+        );
+    }
+    
+    public Command goToRight() {
+        return new FunctionalCommand(
+            () -> {
+                
+            },
+            () -> {
+                Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
+                if (tag.isPresent()) {
+                    PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
+                        .max(Comparator.comparingDouble(target -> target.area))
+                        .orElse(null);
+                    System.out.println("CLOSEST TARGET: " + closestTarget.fiducialId);
+    
+                    double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
+                    System.out.println("OFFSET: " + CROSSHAIROFFSET);
+    
+                    // Move towards target
+                    if (CROSSHAIROFFSET < 300) {
+                        swerveDrive.drive(new Translation2d(-0.1, 0), 0, false, false);
+                    } else {
+                        swerveDrive.drive(new Translation2d(0, 0), 0, false, false);
+                    }
+                }
+            },
+            interrupted -> {
+            },
+            () -> {
+                Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
+                if (tag.isPresent()) {
+                    PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
+                        .max(Comparator.comparingDouble(target -> target.area))
+                        .orElse(null);
+
+                    double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
+                    // Command finishes if the target is within the threshold
+                    return CROSSHAIROFFSET >= 300;
+                }
+                return false;
+            }, // Ends when at the target
+            this
+        );
+    }
+     // public Command alignLeftSide() {
+    //     return run(() -> {
+    //         swerveDrive.drive(new Translation2d(0, 0.5), 0, false, false);
+    //     }).withTimeout(0.5); // Adjust time as needed
+    // }
     
     public Command goToClosestCoralTag() {
         return run(() -> {
@@ -222,7 +318,7 @@ public class Swerve extends SubsystemBase {
     
             // Find the closest coral tag
             Pose2d closestCoral = this.getPose().nearest(poses);
-
+            closestCoral = closestCoral.rotateAround(closestCoral.getTranslation(), Rotation2d.fromDegrees(90));
             // Schedule the robot to move to the new adjusted pose
             CommandScheduler.getInstance().schedule(driveToPose(closestCoral));
         });
@@ -241,7 +337,6 @@ public class Swerve extends SubsystemBase {
      */
     public void setupPhotonVision() {
         System.out.println("Setting Up Photon Vision");
-
         vision = new Vision(swerveDrive::getPose, swerveDrive.field);
     }
 
@@ -392,10 +487,6 @@ public class Swerve extends SubsystemBase {
      */
     public Rotation2d getHeading() {
         return getPose().getRotation();
-    }
-
-    public Rotation2d getGyro() {
-        return swerveDrive.imuReadingCache.getValue().toRotation2d();
     }
 
     /**

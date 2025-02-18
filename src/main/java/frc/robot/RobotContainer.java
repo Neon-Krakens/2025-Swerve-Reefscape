@@ -137,17 +137,10 @@ public class RobotContainer {
 
     driver.y().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
 
+    driver.povLeft().toggleOnTrue(swerveDrive.goToLeft());
+    driver.povRight().toggleOnTrue(swerveDrive.goToRight());
+    
     driver.b().whileTrue(swerveDrive.goToClosestCoralTag());
-
-    driver.x().whileTrue(Commands.runOnce(()->{
-      Command driveFieldOrientedDirectAngle2 = swerveDrive.driveFieldOriented(driveInputStream2);
-      swerveDrive.setDefaultCommand(driveFieldOrientedDirectAngle2);
-    }, elevator));
-    driver.a().whileTrue(Commands.runOnce(()->{
-      Command driveFieldOrientedDirectAngle2 = swerveDrive.driveFieldOriented(driveInputStream);
-      swerveDrive.setDefaultCommand(driveFieldOrientedDirectAngle2);
-    }, elevator));
-
 
     driver.leftBumper().toggleOnTrue(Commands.runOnce(elevator::goDownLevel, elevator));
     driver.rightBumper().toggleOnTrue(Commands.runOnce(elevator::goUpLevel, elevator));
