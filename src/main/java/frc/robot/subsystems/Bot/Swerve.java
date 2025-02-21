@@ -343,11 +343,10 @@ public class Swerve extends SubsystemBase {
 
     public Command goToClosestDrop() {
         return run(() -> {
-            
             Cameras camera = Cameras.CENTER_CAM;
             List<Pose2d> poses = new ArrayList<>();
             
-            // Collect the valid coral tag poses
+            // Collect the valid depo tag poses
             camera.getFieldLayout().getTags().forEach(tag -> {
                 Pose2d pose = tag.pose.toPose2d();
                 boolean redTag = tag.ID == 2 || tag.ID == 1;
@@ -373,11 +372,11 @@ public class Swerve extends SubsystemBase {
             });
             swerveDrive.field.getObject("TAGS").setPoses(poses);
     
-            // Find the closest coral tag
-            Pose2d closestCoral = this.getPose().nearest(poses);
-            // closestCoral = closestCoral.rotateAround(closestCoral.getTranslation(), Rotation2d.fromDegrees(90));
+            // Find the closest depo tag
+            Pose2d closestDepoTag = this.getPose().nearest(poses);
+            closestDepoTag = closestDepoTag.rotateAround(closestDepoTag.getTranslation(), Rotation2d.fromDegrees(-90));
             // Schedule the robot to move to the new adjusted pose
-            CommandScheduler.getInstance().schedule(driveToPose(closestCoral));
+            CommandScheduler.getInstance().schedule(driveToPose(closestDepoTag));
         });
     }
 
