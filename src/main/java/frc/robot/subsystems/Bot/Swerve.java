@@ -289,17 +289,21 @@ public class Swerve extends SubsystemBase {
     //     }).withTimeout(0.5); // Adjust time as needed
     // }
     
-    public Command goToClosestCoralTag() {
+    public Command goToClosestCoralTag(boolean alignLeftSide) {
         return run(() -> {
-            System.out.println("Going to Coral");
             Cameras camera = Cameras.CENTER_CAM;
             List<Pose2d> poses = new ArrayList<>();
             
             // Collect the valid coral tag poses
             camera.getFieldLayout().getTags().forEach(tag -> {
                 Pose2d pose = tag.pose.toPose2d();
-                if(tag.ID == 17 || tag.ID == 18 || tag.ID == 19 || tag.ID == 20 || tag.ID == 21 || tag.ID == 22) {
+                boolean redTag = tag.ID == 6 || tag.ID == 7 || tag.ID == 8 || tag.ID == 9 || tag.ID == 10 || tag.ID == 11;
+                boolean blueTag = tag.ID == 17 || tag.ID == 18 || tag.ID == 19 || tag.ID == 20 || tag.ID == 21 || tag.ID == 22;
 
+                if(
+                    (redTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) || 
+                    (blueTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+                ) {
                     pose = pose.rotateAround(pose.getTranslation(), Rotation2d.fromDegrees(180)); 
 
                     Rotation2d rotation = pose.getRotation();
@@ -308,8 +312,15 @@ public class Swerve extends SubsystemBase {
                     // Calculate the change in position
                     double deltaX = (-0.5) * Math.cos(angle);
                     double deltaY = (-0.5) * Math.sin(angle);
-            
+                    // Pose lined up with target
                     Pose2d newPose = new Pose2d(pose.getX() + deltaX, pose.getY() + deltaY, pose.getRotation());
+                    double offset = alignLeftSide?0.09:0.43; //Left offset 0.1
+
+                    // Now move left
+                    double leftX = (offset) * Math.sin(angle); // Use -sin for leftward movement
+                    double leftY = (-offset) * Math.cos(angle);  // Use cos for leftward movement
+
+                    newPose = new Pose2d(newPose.getX() + leftX, newPose.getY() + leftY, newPose.getRotation());
 
                     poses.add(newPose);
                 }
@@ -319,6 +330,52 @@ public class Swerve extends SubsystemBase {
             // Find the closest coral tag
             Pose2d closestCoral = this.getPose().nearest(poses);
             closestCoral = closestCoral.rotateAround(closestCoral.getTranslation(), Rotation2d.fromDegrees(90));
+            // Schedule the robot to move to the new adjusted pose
+            CommandScheduler.getInstance().schedule(driveToPose(closestCoral));
+        });
+    }
+
+    public Command cancelPathfinding() {
+        return run(() -> {
+            this.getCurrentCommand().cancel();
+        });
+    }
+
+    public Command goToClosestDrop() {
+        return run(() -> {
+            
+            Cameras camera = Cameras.CENTER_CAM;
+            List<Pose2d> poses = new ArrayList<>();
+            
+            // Collect the valid coral tag poses
+            camera.getFieldLayout().getTags().forEach(tag -> {
+                Pose2d pose = tag.pose.toPose2d();
+                boolean redTag = tag.ID == 2 || tag.ID == 1;
+                boolean blueTag = tag.ID == 12 || tag.ID == 13;
+
+                if(
+                    (redTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) || 
+                    (blueTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+                ) {
+                    pose = pose.rotateAround(pose.getTranslation(), Rotation2d.fromDegrees(180)); 
+
+                    Rotation2d rotation = pose.getRotation();
+                    double angle = rotation.getRadians();
+
+                    // Calculate the change in position
+                    double deltaX = (-0.5) * Math.cos(angle);
+                    double deltaY = (-0.5) * Math.sin(angle);
+                    // Pose lined up with target
+                    Pose2d newPose = new Pose2d(pose.getX() + deltaX, pose.getY() + deltaY, pose.getRotation());
+
+                    poses.add(newPose);
+                }
+            });
+            swerveDrive.field.getObject("TAGS").setPoses(poses);
+    
+            // Find the closest coral tag
+            Pose2d closestCoral = this.getPose().nearest(poses);
+            // closestCoral = closestCoral.rotateAround(closestCoral.getTranslation(), Rotation2d.fromDegrees(90));
             // Schedule the robot to move to the new adjusted pose
             CommandScheduler.getInstance().schedule(driveToPose(closestCoral));
         });

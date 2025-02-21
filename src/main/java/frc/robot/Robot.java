@@ -1,4 +1,6 @@
 package frc.robot;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -7,17 +9,21 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
  * Main robot class that manages the robot's lifecycle and operational modes.
- * This class follows the TimedRobot model, executing code in a timed loop for each robot mode.
+ * This class follows the TimedRobot model, executing code in a timed loop for
+ * each robot mode.
  * 
- * <p>Features include:
+ * <p>
+ * Features include:
  * <ul>
- *   <li>Autonomous command management
- *   <li>Teleop control initialization
- *   <li>Test mode handling
- *   <li>Periodic updates across all modes
+ * <li>Autonomous command management
+ * <li>Teleop control initialization
+ * <li>Test mode handling
+ * <li>Periodic updates across all modes
  * </ul>
  * 
- * <p>The robot code is organized using WPILib's command-based framework, with subsystems
+ * <p>
+ * The robot code is organized using WPILib's command-based framework, with
+ * subsystems
  * and commands managed through the RobotContainer class.
  */
 public class Robot extends TimedRobot {
@@ -37,14 +43,29 @@ public class Robot extends TimedRobot {
   /**
    * Periodic function called every 20ms in all robot modes.
    * Runs the command scheduler to execute ongoing commands and update subsystems.
-   * This method is crucial for continuous robot operation and should not be blocked
+   * This method is crucial for continuous robot operation and should not be
+   * blocked
    * or delayed.
    */
+  boolean lastColor = false;
+
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     int estimatedPercentage = (int) ((RobotController.getBatteryVoltage() - 11.3) / (12.8 - 11.3) * 100.0);
-    SmartDashboard.putString("Est. Battery", estimatedPercentage+"%");
+    SmartDashboard.putString("Est. Battery", estimatedPercentage + "%");
+
+    double timeRemaining = Math.max(DriverStation.getMatchTime() - 30, 0);
+    SmartDashboard.putNumber("Time Till Climb", timeRemaining);
+    SmartDashboard.putBoolean("GO CLIMB", lastColor);
+
+    if (timeRemaining == 0) {
+      lastColor = ((int) (DriverStation.getMatchTime() / 0.5)) % 2 == 0;
+    } else {
+      lastColor = false;
+    }
+
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
   }
 
   /** Called once when the robot is disabled. */
@@ -88,7 +109,8 @@ public class Robot extends TimedRobot {
 
   /**
    * Called when operator control is initialized.
-   * Cancels any running autonomous command to ensure safe transition to manual control.
+   * Cancels any running autonomous command to ensure safe transition to manual
+   * control.
    * This prevents autonomous commands from interfering with driver inputs.
    */
   @Override

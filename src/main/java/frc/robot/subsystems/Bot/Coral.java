@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Coral extends SubsystemBase {
     private final SparkMax wheelMotor;
@@ -16,7 +17,7 @@ public class Coral extends SubsystemBase {
         wheelMotor = new SparkMax(11, MotorType.kBrushless);
     }
 
-    public Command spinWheel() {
+    public Command spinWheelSequence() {
         return Commands.sequence(
             Commands.runOnce(() -> {
                 wheelMotor.set(0.5);
@@ -28,5 +29,21 @@ public class Coral extends SubsystemBase {
                 System.out.println("Coral stopped");
             })// Stop after 3 seconds
         );
+    }
+
+    public Command spinForward() {
+        return Commands.runOnce(() -> {
+            double wheelSpeed = 0.3;
+            wheelMotor.set(wheelSpeed);
+            System.out.println("Coral Started at speed: " + wheelSpeed);
+        });
+    }
+
+    public Command spinReverse() {
+        return Commands.runOnce(() -> {
+            double wheelSpeed = -0.3;
+            wheelMotor.set(wheelSpeed);
+            System.out.println("Coral Reverse Started at speed: " + wheelSpeed);
+        });
     }
 }

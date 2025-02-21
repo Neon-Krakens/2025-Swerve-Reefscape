@@ -1,14 +1,7 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Meter;
-
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,7 +12,6 @@ import frc.robot.subsystems.Bot.Coral;
 import frc.robot.subsystems.Bot.Elevator;
 import frc.robot.subsystems.Bot.Swerve;
 import frc.robot.subsystems.Lighting.LightSubsystem;
-import frc.robot.subsystems.Vision.Vision.Cameras;
 import swervelib.SwerveInputStream;
 
 /**
@@ -66,15 +58,8 @@ public class RobotContainer {
       .cubeRotationControllerAxis(true)
       .withControllerHeadingAxis(() -> driver.getRightX() * -1, () -> driver.getRightY() * -1)
       .deadband(Constants.DRIVER_DEADBAND)
-      .allianceRelativeControl(false)
+      .allianceRelativeControl(true)
       .headingWhile(true);
-
-    public SwerveInputStream driveInputStream2 = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
-      () -> driver.getLeftY() * -1,
-      () -> driver.getLeftX() * -1)
-      .cubeTranslationControllerAxis(true)
-      .scaleTranslation(0.5)
-      .cubeRotationControllerAxis(true);
 
   /**
    * Creates a new RobotContainer and initializes all robot subsystems and
@@ -107,18 +92,14 @@ public class RobotContainer {
   }
 
   private void setupPathPlannerCommands() {
+    // Commands for PathPlanner auto routines
     NamedCommands.registerCommand("Raise Elevator 4", elevator.goToLevel(4));
     NamedCommands.registerCommand("Raise Elevator 3", elevator.goToLevel(3));
     NamedCommands.registerCommand("Raise Elevator 2", elevator.goToLevel(2));
     NamedCommands.registerCommand("Raise Elevator 1", elevator.goToLevel(1));
     NamedCommands.registerCommand("Raise Elevator 0", elevator.goToLevel(0));
 
-    NamedCommands.registerCommand("Deposit Coral", coral.spinWheel());
-
-    // swerveDrive.addPathPlannerCommand("Test Path", new Pose2d(new
-    // Translation2d(Meter.of(0), Meter.of(0)), Rotation2d.fromDegrees(0)), new
-    // Pose2d(new Translation2d(Meter.of(1), Meter.of(1)),
-    // Rotation2d.fromDegrees(0)));
+    NamedCommands.registerCommand("Deposit Coral", coral.spinWheelSequence());
   }
 
   /**
@@ -135,19 +116,21 @@ public class RobotContainer {
     Command driveFieldOrientedDirectAngle = swerveDrive.driveFieldOriented(driveInputStream);
     swerveDrive.setDefaultCommand(driveFieldOrientedDirectAngle);
 
-    driver.y().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
+    driver.povUp().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
 
-    driver.povLeft().toggleOnTrue(swerveDrive.goToLeft());
-    driver.povRight().toggleOnTrue(swerveDrive.goToRight());
-    
-    driver.b().whileTrue(swerveDrive.goToClosestCoralTag());
+    driver.y().toggleOnTrue(swerveDrive.cancelPathfinding());
+    driver.x().toggleOnTrue(swerveDrive.goToClosestCoralTag(true));
+    driver.b().toggleOnTrue(swerveDrive.goToClosestCoralTag(false));
+
+    driver.a().toggleOnTrue(
+      Commands.sequence(Commands.runOnce(() -> elevator.goToLevel(1), elevator), swerveDrive.goToClosestDrop())
+    );
 
     driver.leftBumper().toggleOnTrue(Commands.runOnce(elevator::goDownLevel, elevator));
     driver.rightBumper().toggleOnTrue(Commands.runOnce(elevator::goUpLevel, elevator));
 
-    // driver.a().whileTrue(swerveDrive.driveToPose(new Pose2d(new
-    // Translation2d(Meter.of(8.774), Meter.of(4.026)),
-    // Rotation2d.fromDegrees(0))));
+    driver.rightTrigger().whileTrue(coral.spinForward());
+    driver.leftTrigger().whileTrue(coral.spinReverse());
   }
 
   /**
