@@ -310,8 +310,8 @@ public class Swerve extends SubsystemBase {
                     double angle = rotation.getRadians();
 
                     // Calculate the change in position
-                    double deltaX = (-0.5) * Math.cos(angle);
-                    double deltaY = (-0.5) * Math.sin(angle);
+                    double deltaX = (-1) * Math.cos(angle);
+                    double deltaY = (-1) * Math.sin(angle);
                     // Pose lined up with target
                     Pose2d newPose = new Pose2d(pose.getX() + deltaX, pose.getY() + deltaY, pose.getRotation());
                     double offset = alignLeftSide?0.09:0.43; //Left offset 0.1

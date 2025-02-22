@@ -7,8 +7,10 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -21,8 +23,8 @@ public class Elevator extends SubsystemBase {
     private final SparkMax rightLift;
     private final SparkMax leftLift;
 
-    private final DigitalInput limitSwitchBottom = new DigitalInput(Constants.ELEVATOR_LIMITSWITCH_CHANNEL_BOTTOM);
-    private final DigitalInput limitSwitchTop = new DigitalInput(Constants.ELEVATOR_LIMITSWITCH_CHANNEL_TOP);
+    // private final DigitalInput limitSwitchBottom = new DigitalInput(Constants.ELEVATOR_LIMITSWITCH_CHANNEL_BOTTOM);
+    // private final DigitalInput limitSwitchTop = new DigitalInput(Constants.ELEVATOR_LIMITSWITCH_CHANNEL_TOP);
 
     private final SparkMaxConfig rightConfig;
 
@@ -42,6 +44,8 @@ public class Elevator extends SubsystemBase {
     }
     
     double liftSpeed = 0.0;
+
+
     @Override
     public void periodic() {
         double position = -leftLift.getEncoder().getPosition();
@@ -56,6 +60,12 @@ public class Elevator extends SubsystemBase {
             SmartDashboard.putBoolean("Reset Elevator", false);
         }
 
+        if(DriverStation.isDisabled()) {
+            target = position;
+            atTarget = true;
+            return;
+        }
+
         // Stop movement when near target
         double distance = target - position;
 
@@ -66,8 +76,7 @@ public class Elevator extends SubsystemBase {
         }
         atTarget = false;
 
-        // Speed control (could be improved with PID)
-        double speed = Math.max(Math.min(distance / 630.0, 1.0), -1.0);
+        double speed = Math.max(Math.min(distance / 300.0, 1.0), -1.0);
         if (speed < 0 && speed > -0.1) speed = -0.1;
         if (speed > 0 && speed < 0.2) speed = 0.2;
 
@@ -91,7 +100,7 @@ public class Elevator extends SubsystemBase {
         return new FunctionalCommand(
             () -> {
                 targetLevel = Math.max(0, Math.min(level, 4)); // Keep within bounds
-                target = targetLevel * (660.0 / 4);
+                target = (targetLevel * (640.0 / 4))+10; // make the top most 650, and bottom most 10
                 atTarget = false;
                 System.out.println("Setting target level: " + targetLevel);
             },
@@ -112,10 +121,10 @@ public class Elevator extends SubsystemBase {
     }
 
     public void goUpLevel() {
-        goToLevel(targetLevel + 1);
+        CommandScheduler.getInstance().schedule(goToLevel(targetLevel + 1));
     }
 
     public void goDownLevel() {
-        goToLevel(targetLevel - 1);
+        CommandScheduler.getInstance().schedule(goToLevel(targetLevel - 1));
     }
 }
