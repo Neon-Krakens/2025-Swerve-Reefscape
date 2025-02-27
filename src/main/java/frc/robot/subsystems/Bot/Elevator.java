@@ -76,11 +76,12 @@ public class Elevator extends SubsystemBase {
         }
         atTarget = false;
 
-        double speed = Math.max(Math.min(distance / 300.0, 1.0), -1.0);
-        if (speed < 0 && speed > -0.1) speed = -0.1;
-        if (speed > 0 && speed < 0.2) speed = 0.2;
+        double speed = Math.max(Math.min(distance / 500.0, 1.0), -1.0);
+        if (speed < 0 && speed > -0.1) speed = -0.1; // Min speed when going up
+        if (speed > 0 && speed < 0.2) speed = 0.2;  // Min speed when going down
 
         liftSpeed = -speed;
+        System.out.println("SETTING LIFT SPEED: "+liftSpeed);
         leftLift.set(liftSpeed);
     }
 
@@ -100,7 +101,7 @@ public class Elevator extends SubsystemBase {
         return new FunctionalCommand(
             () -> {
                 targetLevel = Math.max(0, Math.min(level, 4)); // Keep within bounds
-                target = (targetLevel * (640.0 / 4))+10; // make the top most 650, and bottom most 10
+                target = (targetLevel * (640.0 / 4.0))+10; // make the top most 650, and bottom most 10
                 atTarget = false;
                 System.out.println("Setting target level: " + targetLevel);
             },
