@@ -67,6 +67,8 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 // TAKEN FROM
 // https://github.com/4533-phoenix/frc-2025-robot/blob/main/src/main/java/frc/robot/subsystems/Swerve.java
+// https://docs.yagsl.com/configuring-yagsl/standard-conversion-factors
+// https://docs.yagsl.com/configuring-yagsl/how-to-tune-pidf
 public class Swerve extends SubsystemBase {
     private static Swerve instance;
     private final SwerveDrive swerveDrive;
