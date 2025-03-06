@@ -20,10 +20,10 @@ public class Coral extends SubsystemBase {
     public Command spinWheelSequence() {
         return Commands.sequence(
             Commands.runOnce(() -> {
-                wheelMotor.set(0.5);
+                wheelMotor.set(-0.5);
                 System.out.println("Coral Started");
             }), // Start spinning
-            Commands.waitSeconds(3),               // Wait for 3 seconds
+            Commands.waitSeconds(1),               // Wait for 3 seconds
             Commands.runOnce(() -> {
                 wheelMotor.set(0);
                 System.out.println("Coral stopped");
@@ -37,6 +37,11 @@ public class Coral extends SubsystemBase {
             wheelMotor.set(wheelSpeed);
             System.out.println("Coral Started at speed: " + wheelSpeed);
         });
+    }
+
+    @Override
+    public void periodic() {
+        // wheelMotor.set(0.0);
     }
 
     public Command spinReverse() {

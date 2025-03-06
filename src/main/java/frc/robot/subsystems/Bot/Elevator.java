@@ -77,8 +77,8 @@ public class Elevator extends SubsystemBase {
         atTarget = false;
 
         double speed = Math.max(Math.min(distance / 500.0, 1.0), -1.0);
-        if (speed < 0 && speed > -0.1) speed = -0.1; // Min speed when going up
-        if (speed > 0 && speed < 0.2) speed = 0.2;  // Min speed when going down
+        if (speed < 0 && speed > -0.17) speed = -0.17; // Min speed when going dowb
+        if (speed > 0 && speed < 0.1) speed = 0.1;  // Min speed when going up
 
         liftSpeed = -speed;
         System.out.println("SETTING LIFT SPEED: "+liftSpeed);

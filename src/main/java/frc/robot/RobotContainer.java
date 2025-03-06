@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.Bot.Climb;
 import frc.robot.subsystems.Bot.Coral;
 import frc.robot.subsystems.Bot.Elevator;
 import frc.robot.subsystems.Bot.Swerve;
@@ -44,6 +45,7 @@ public class RobotContainer {
 
   private final Elevator elevator = new Elevator();
   private final Coral coral = new Coral();
+  private final Climb climb = new Climb();
   private final LightSubsystem lights = new LightSubsystem();
 
   /**
@@ -129,8 +131,13 @@ public class RobotContainer {
     driver.leftBumper().toggleOnTrue(Commands.runOnce(elevator::goDownLevel, elevator));
     driver.rightBumper().toggleOnTrue(Commands.runOnce(elevator::goUpLevel, elevator));
 
-    driver.rightTrigger().whileTrue(coral.spinForward());
-    driver.leftTrigger().whileTrue(coral.spinReverse());
+    driver.rightTrigger().toggleOnTrue(coral.spinWheelSequence());
+
+    driver.povLeft().whileTrue(climb.setSpeed(0.2));
+    driver.povRight().whileTrue(climb.setSpeed(-0.2));
+
+
+    // driver.leftTrigger().whileTrue(coral.spinReverse());
   }
 
   /**

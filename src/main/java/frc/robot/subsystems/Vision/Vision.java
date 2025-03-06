@@ -283,9 +283,9 @@ public class Vision
      */
     CENTER_CAM("center",
                new Rotation3d(0, 0, Units.degreesToRadians(-90)),
-               new Translation3d(Units.feetToMeters(1),
-                                 Units.feetToMeters(1.8),
-                                 Units.feetToMeters(1.8)),
+               new Translation3d(Units.inchesToMeters(9.5),
+                                 Units.feetToMeters(2),
+                                 Units.inchesToMeters(16)),
                VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1));
 
     /**
