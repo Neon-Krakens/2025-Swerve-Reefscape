@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.Bot.Algae;
 import frc.robot.subsystems.Bot.Climb;
 import frc.robot.subsystems.Bot.Coral;
 import frc.robot.subsystems.Bot.Elevator;
@@ -46,6 +47,7 @@ public class RobotContainer {
   private final Elevator elevator = new Elevator();
   private final Coral coral = new Coral();
   private final Climb climb = new Climb();
+  private final Algae algae = new Algae();
   private final LightSubsystem lights = new LightSubsystem();
 
   /**
@@ -53,12 +55,12 @@ public class RobotContainer {
    * Configures how controller inputs are processed and applied to drive commands.
    */
   public SwerveInputStream driveInputStream = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
-      () -> driver.getLeftY() * -1,
-      () -> driver.getLeftX() * -1)
+      () -> driver.getLeftY() * 1,
+      () -> driver.getLeftX() * 1)
       .cubeTranslationControllerAxis(true)
       .scaleTranslation(0.5)
       .cubeRotationControllerAxis(true)
-      .withControllerHeadingAxis(() -> driver.getRightX() * -1, () -> driver.getRightY() * -1)
+      .withControllerHeadingAxis(() -> driver.getRightX() * 1, () -> driver.getRightY() * 1)
       .deadband(Constants.DRIVER_DEADBAND)
       .allianceRelativeControl(true)
       .headingWhile(true);
@@ -132,9 +134,14 @@ public class RobotContainer {
     driver.rightBumper().toggleOnTrue(Commands.runOnce(elevator::goUpLevel, elevator));
 
     driver.rightTrigger().toggleOnTrue(coral.spinWheelSequence());
+    driver.leftTrigger(0.0).whileTrue(
+      Commands.run(()->{
+        algae.setPosition(driver.getLeftTriggerAxis());
+      },algae)
+    );
 
-    driver.povLeft().whileTrue(climb.setSpeed(0.2));
-    driver.povRight().whileTrue(climb.setSpeed(-0.2));
+    driver.povLeft().whileTrue(climb.setVoltage(-0.75));
+    driver.povRight().whileTrue(climb.setVoltage(1.5));
 
 
     // driver.leftTrigger().whileTrue(coral.spinReverse());

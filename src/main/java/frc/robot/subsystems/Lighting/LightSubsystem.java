@@ -40,7 +40,6 @@ public class LightSubsystem extends SubsystemBase {
 
         // Reuse buffer
         m_ledBuffer = new AddressableLEDBuffer(270);
-
         m_led.setLength(m_ledBuffer.getLength());
 
 
@@ -50,9 +49,21 @@ public class LightSubsystem extends SubsystemBase {
 
         m_led.start();
     }
-
+    boolean connected = false;
     @Override
     public void periodic() {
+        if(!DriverStation.isDSAttached()) {
+            connected = false;
+            LEDPattern.solid(Color.kOrangeRed).breathe(Time.ofRelativeUnits(0.6, Seconds)).applyTo(m_ledBuffer);
+            m_led.setData(m_ledBuffer);
+            return;
+        }
+        if(!connected) {
+            connected = true;
+            LEDPattern.solid(Color.kGreen).applyTo(m_ledBuffer);
+            m_led.setData(m_ledBuffer);
+            return;
+        }
         // Retrieve the selected option
         String selectedMode = chooser.getSelected();
 
