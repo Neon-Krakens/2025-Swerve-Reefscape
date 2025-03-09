@@ -46,18 +46,22 @@ public class Algae extends SubsystemBase {
         var speed = (target-position)/10.0;
         var atTarget = Math.abs(target-position)<0.1;
 
-        if(atTarget) timeNotAtTarget++;
+        if(!atTarget) timeNotAtTarget++;
         else timeNotAtTarget = 0;
         
-        if(speed>0.005) speed = 0.005; // Slow when going down
+        if(speed>0.005) {
+            speed = 0.005; // Slow when going down
+            timeNotAtTarget = 0;
+        }
         // starts a 1.01x multiplier after 2 seconds of not reaching goal
-        if(timeNotAtTarget>100) { 
-            System.out.println("Not at target, multiplying");
+        if(timeNotAtTarget>50) { 
+            System.out.println("Not at target, multiplying "+(1+((timeNotAtTarget/50.0)/3.0)));
+            
             // 50/s, will be at 1.6x after 1s
-            speed = speed*1.01;
+            speed = speed*(1+((timeNotAtTarget/50)/3));
+            System.out.println("Speed: "+speed);
         }
 
-        System.out.println(" SPEED:"+speed+" "+Math.abs(target-position));
         stickMotor.set(speed);
     }
 }
