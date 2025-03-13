@@ -176,24 +176,6 @@ public class Swerve extends SubsystemBase {
         PathfindingCommand.warmupCommand().schedule();
     }
 
-    /**
-     * Aim the robot at the target returned by PhotonVision.
-     *
-     * @return A {@link Command} which will run the alignment.
-     */
-    public Command aimAtTarget(Cameras camera) {
-        return run(() -> {
-            Optional<PhotonPipelineResult> resultO = camera.getBestResult();
-            if (resultO.isPresent()) {
-                var result = resultO.get();
-                if (result.hasTargets()) {
-                    System.out.println("BEST TARGET: "+result.getBestTarget().fiducialId);
-                    
-                    drive(getTargetSpeeds(0,0, Rotation2d.fromDegrees(result.getBestTarget().getYaw()))); // Not sure if this will work, more math may be required.
-                }
-            }
-        });
-    }
     // ID 17: 3.82665265066028, 2.892707548812102, 60.123940267858615
     // ID 18: 3.177104680315848, 4.019763460677997, 0.035054132592455205
     // ID 19: 3.79086396253783, 5.179714612422249, -60.64281358797446
@@ -201,193 +183,199 @@ public class Swerve extends SubsystemBase {
     // ID 21: 5.78595090086809, 4.021882830842056, 179.89661505575071
     // ID 22: 5.149234456259311, 2.9065265281854242, 121.24084087080759
     boolean isAligned = false;
-    public Command goToLeft() {
-        return new FunctionalCommand(
-            () -> {
+    // public Command goToLeft() {
+    //     return new FunctionalCommand(
+    //         () -> {
                 
-            },
-            () -> {
-                Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
-                if (tag.isPresent()) {
-                    PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
-                        .max(Comparator.comparingDouble(target -> target.area))
-                        .orElse(null);
-                    System.out.println("CLOSEST TARGET: " + closestTarget.fiducialId);
+    //         },
+    //         () -> {
+    //             Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
+    //             if (tag.isPresent()) {
+    //                 PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
+    //                     .max(Comparator.comparingDouble(target -> target.area))
+    //                     .orElse(null);
+    //                 System.out.println("CLOSEST TARGET: " + closestTarget.fiducialId);
 
-                    double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
-                    System.out.println("OFFSET: " + CROSSHAIROFFSET);
+    //                 double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
+    //                 System.out.println("OFFSET: " + CROSSHAIROFFSET);
 
-                    // Move towards target
-                    if (CROSSHAIROFFSET > -110) {
-                        swerveDrive.drive(new Translation2d(0.1, 0), 0, false, false);
-                    } else {
-                        swerveDrive.drive(new Translation2d(0, 0), 0, false, false);
-                    }
-                }
-            },
-            interrupted -> {
-            },
-            () -> {
-                Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
-                if (tag.isPresent()) {
-                    PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
-                        .max(Comparator.comparingDouble(target -> target.area))
-                        .orElse(null);
+    //                 // Move towards target
+    //                 if (CROSSHAIROFFSET > -110) {
+    //                     swerveDrive.drive(new Translation2d(0.1, 0), 0, false, false);
+    //                 } else {
+    //                     swerveDrive.drive(new Translation2d(0, 0), 0, false, false);
+    //                 }
+    //             }
+    //         },
+    //         interrupted -> {
+    //         },
+    //         () -> {
+    //             Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
+    //             if (tag.isPresent()) {
+    //                 PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
+    //                     .max(Comparator.comparingDouble(target -> target.area))
+    //                     .orElse(null);
 
-                    double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
-                    // Command finishes if the target is within the threshold
-                    return CROSSHAIROFFSET <= -110;
-                }
-                return false;
-            }, // Ends when at the target
-            this
-        );
-    }
+    //                 double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
+    //                 // Command finishes if the target is within the threshold
+    //                 return CROSSHAIROFFSET <= -110;
+    //             }
+    //             return false;
+    //         }, // Ends when at the target
+    //         this
+    //     );
+    // }
     
-    public Command goToRight() {
-        return new FunctionalCommand(
-            () -> {
+    // public Command goToRight() {
+    //     return new FunctionalCommand(
+    //         () -> {
                 
-            },
-            () -> {
-                Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
-                if (tag.isPresent()) {
-                    PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
-                        .max(Comparator.comparingDouble(target -> target.area))
-                        .orElse(null);
-                    System.out.println("CLOSEST TARGET: " + closestTarget.fiducialId);
+    //         },
+    //         () -> {
+    //             Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
+    //             if (tag.isPresent()) {
+    //                 PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
+    //                     .max(Comparator.comparingDouble(target -> target.area))
+    //                     .orElse(null);
+    //                 System.out.println("CLOSEST TARGET: " + closestTarget.fiducialId);
     
-                    double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
-                    System.out.println("OFFSET: " + CROSSHAIROFFSET);
+    //                 double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
+    //                 System.out.println("OFFSET: " + CROSSHAIROFFSET);
     
-                    // Move towards target
-                    if (CROSSHAIROFFSET < 300) {
-                        swerveDrive.drive(new Translation2d(-0.1, 0), 0, false, false);
-                    } else {
-                        swerveDrive.drive(new Translation2d(0, 0), 0, false, false);
-                    }
-                }
-            },
-            interrupted -> {
-            },
-            () -> {
-                Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
-                if (tag.isPresent()) {
-                    PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
-                        .max(Comparator.comparingDouble(target -> target.area))
-                        .orElse(null);
+    //                 // Move towards target
+    //                 if (CROSSHAIROFFSET < 300) {
+    //                     swerveDrive.drive(new Translation2d(-0.1, 0), 0, false, false);
+    //                 } else {
+    //                     swerveDrive.drive(new Translation2d(0, 0), 0, false, false);
+    //                 }
+    //             }
+    //         },
+    //         interrupted -> {
+    //         },
+    //         () -> {
+    //             Optional<PhotonPipelineResult> tag = Cameras.CENTER_CAM.getBestResult();
+    //             if (tag.isPresent()) {
+    //                 PhotonTrackedTarget closestTarget = tag.get().getTargets().stream()
+    //                     .max(Comparator.comparingDouble(target -> target.area))
+    //                     .orElse(null);
 
-                    double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
-                    // Command finishes if the target is within the threshold
-                    return CROSSHAIROFFSET >= 300;
-                }
-                return false;
-            }, // Ends when at the target
-            this
-        );
-    }
-     // public Command alignLeftSide() {
+    //                 double CROSSHAIROFFSET = -(closestTarget.detectedCorners.get(0).x - 960.0 / 2);
+    //                 // Command finishes if the target is within the threshold
+    //                 return CROSSHAIROFFSET >= 300;
+    //             }
+    //             return false;
+    //         }, // Ends when at the target
+    //         this
+    //     );
+    // }
+    //  // public Command alignLeftSide() {
     //     return run(() -> {
     //         swerveDrive.drive(new Translation2d(0, 0.5), 0, false, false);
     //     }).withTimeout(0.5); // Adjust time as needed
     // }
     
-    public Command goToClosestCoralTag(boolean alignLeftSide) {
-        return run(() -> {
-            Cameras camera = Cameras.CENTER_CAM;
-            List<Pose2d> poses = new ArrayList<>();
-            
-            // Collect the valid coral tag poses
-            camera.getFieldLayout().getTags().forEach(tag -> {
-                Pose2d pose = tag.pose.toPose2d();
-                boolean redTag = tag.ID == 6 || tag.ID == 7 || tag.ID == 8 || tag.ID == 9 || tag.ID == 10 || tag.ID == 11;
-                boolean blueTag = tag.ID == 17 || tag.ID == 18 || tag.ID == 19 || tag.ID == 20 || tag.ID == 21 || tag.ID == 22;
-
-                if(
-                    (redTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) || 
-                    (blueTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-                ) {
-                    pose = pose.rotateAround(pose.getTranslation(), Rotation2d.fromDegrees(180)); 
-
-                    Rotation2d rotation = pose.getRotation();
-                    double angle = rotation.getRadians();
-
-                    // Calculate the change in position
-                    double deltaX = (-1) * Math.cos(angle);
-                    double deltaY = (-1) * Math.sin(angle);
-                    // Pose lined up with target
-                    Pose2d newPose = new Pose2d(pose.getX() + deltaX, pose.getY() + deltaY, pose.getRotation());
-                    double offset = alignLeftSide?0.09:0.43; //Left offset 0.1
-
-                    // Now move left
-                    double leftX = (offset) * Math.sin(angle); // Use -sin for leftward movement
-                    double leftY = (-offset) * Math.cos(angle);  // Use cos for leftward movement
-
-                    newPose = new Pose2d(newPose.getX() + leftX, newPose.getY() + leftY, newPose.getRotation());
-
-                    poses.add(newPose);
-                }
-            });
-            swerveDrive.field.getObject("TAGS").setPoses(poses);
-    
-            // Find the closest coral tag
-            Pose2d closestCoral = this.getPose().nearest(poses);
-            closestCoral = closestCoral.rotateAround(closestCoral.getTranslation(), Rotation2d.fromDegrees(90));
-            // Schedule the robot to move to the new adjusted pose
-            CommandScheduler.getInstance().schedule(driveToPose(closestCoral));
-        });
-    }
-
-    public Command cancelPathfinding() {
-        return run(() -> {
-            this.getCurrentCommand().cancel();
-        });
-    }
-
-    public Command goToClosestDrop() {
-        return run(() -> {
-            Cameras camera = Cameras.CENTER_CAM;
-            List<Pose2d> poses = new ArrayList<>();
-            
-            // Collect the valid depo tag poses
-            camera.getFieldLayout().getTags().forEach(tag -> {
-                Pose2d pose = tag.pose.toPose2d();
-                boolean redTag = tag.ID == 2 || tag.ID == 1;
-                boolean blueTag = tag.ID == 12 || tag.ID == 13;
-
-                if(
-                    (redTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) || 
-                    (blueTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-                ) {
-                    pose = pose.rotateAround(pose.getTranslation(), Rotation2d.fromDegrees(180)); 
-
-                    Rotation2d rotation = pose.getRotation();
-                    double angle = rotation.getRadians();
-
-                    // Calculate the change in position
-                    double deltaX = (-0.5) * Math.cos(angle);
-                    double deltaY = (-0.5) * Math.sin(angle);
-                    // Pose lined up with target
-                    Pose2d newPose = new Pose2d(pose.getX() + deltaX, pose.getY() + deltaY, pose.getRotation());
-
-                    poses.add(newPose);
-                }
-            });
-            swerveDrive.field.getObject("TAGS").setPoses(poses);
-    
-            // Find the closest depo tag
-            Pose2d closestDepoTag = this.getPose().nearest(poses);
-            closestDepoTag = closestDepoTag.rotateAround(closestDepoTag.getTranslation(), Rotation2d.fromDegrees(-90));
-            // Schedule the robot to move to the new adjusted pose
-            CommandScheduler.getInstance().schedule(driveToPose(closestDepoTag));
-        });
-    }
-
-    // public Command alignLeftSide() {
+    // public Command goToClosestCoralTag(boolean alignLeftSide) {
     //     return run(() -> {
-    //         swerveDrive.drive(new Translation2d(0, 0.5), 0, false, false);
-    //     }).withTimeout(0.5); // Adjust time as needed
+    //         Cameras camera = Cameras.CENTER_CAM;
+    //         List<Pose2d> poses = new ArrayList<>();
+            
+    //         // Collect the valid coral tag poses
+    //         camera.getFieldLayout().getTags().forEach(tag -> {
+    //             Pose2d pose = tag.pose.toPose2d();
+    //             boolean redTag = tag.ID == 6 || tag.ID == 7 || tag.ID == 8 || tag.ID == 9 || tag.ID == 10 || tag.ID == 11;
+    //             boolean blueTag = tag.ID == 17 || tag.ID == 18 || tag.ID == 19 || tag.ID == 20 || tag.ID == 21 || tag.ID == 22;
+
+    //             if(
+    //                 (redTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) || 
+    //                 (blueTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+    //             ) {
+    //                 pose = pose.rotateAround(pose.getTranslation(), Rotation2d.fromDegrees(180)); 
+
+    //                 Rotation2d rotation = pose.getRotation();
+    //                 double angle = rotation.getRadians();
+
+    //                 // Calculate the change in position
+    //                 double deltaX = (-0.4) * Math.cos(angle);
+    //                 double deltaY = (-0.4) * Math.sin(angle);
+    //                 // Pose lined up with target
+    //                 Pose2d newPose = new Pose2d(pose.getX() + deltaX, pose.getY() + deltaY, pose.getRotation());
+    //                 double offset = alignLeftSide?0.09:0.43; //Left offset 0.1
+
+    //                 // Now move left
+    //                 double leftX = (offset) * Math.sin(angle); // Use -sin for leftward movement
+    //                 double leftY = (-offset) * Math.cos(angle);  // Use cos for leftward movement
+
+    //                 newPose = new Pose2d(newPose.getX() + leftX, newPose.getY() + leftY, newPose.getRotation());
+
+    //                 poses.add(newPose);
+    //             }
+    //         });
+    //         swerveDrive.field.getObject("TAGS").setPoses(poses);
+    
+    //         // Find the closest coral tag
+    //         Pose2d closestCoral = this.getPose().nearest(poses);
+    //         closestCoral = closestCoral.rotateAround(closestCoral.getTranslation(), Rotation2d.fromDegrees(90));
+    //         // Schedule the robot to move to the new adjusted pose
+    //         CommandScheduler.getInstance().schedule(driveToPose(closestCoral));
+    //     });
     // }
+
+    // public Command cancelPathfinding() {
+    //     return run(() -> {
+    //         this.getCurrentCommand().cancel();
+    //     });
+    // }
+
+    // public Command goToClosestDrop() {
+    //     return run(() -> {
+    //         Cameras camera = Cameras.CENTER_CAM;
+    //         List<Pose2d> poses = new ArrayList<>();
+            
+    //         // Collect the valid depo tag poses
+    //         camera.getFieldLayout().getTags().forEach(tag -> {
+    //             Pose2d pose = tag.pose.toPose2d();
+    //             boolean redTag = tag.ID == 2 || tag.ID == 1;
+    //             boolean blueTag = tag.ID == 12 || tag.ID == 13;
+
+    //             if(
+    //                 (redTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) || 
+    //                 (blueTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+    //             ) {
+    //                 pose = pose.rotateAround(pose.getTranslation(), Rotation2d.fromDegrees(180)); 
+
+    //                 Rotation2d rotation = pose.getRotation();
+    //                 double angle = rotation.getRadians();
+
+    //                 // Calculate the change in position
+    //                 double deltaX = (-0.5) * Math.cos(angle);
+    //                 double deltaY = (-0.5) * Math.sin(angle);
+    //                 // Pose lined up with target
+    //                 Pose2d newPose = new Pose2d(pose.getX() + deltaX, pose.getY() + deltaY, pose.getRotation());
+
+    //                 poses.add(newPose);
+    //             }
+    //         });
+    //         swerveDrive.field.getObject("TAGS").setPoses(poses);
+    
+    //         // Find the closest depo tag
+    //         Pose2d closestDepoTag = this.getPose().nearest(poses);
+    //         closestDepoTag = closestDepoTag.rotateAround(closestDepoTag.getTranslation(), Rotation2d.fromDegrees(-90));
+    //         // Schedule the robot to move to the new adjusted pose
+    //         CommandScheduler.getInstance().schedule(driveToPose(closestDepoTag));
+    //     });
+    // }
+
+    public Command scootLeft() {
+        return run(() -> {
+            swerveDrive.drive(new Translation2d(0, 0.5), 0, false, false);
+        }); // Adjust time as needed
+    }
+
+    public Command scootRight() {
+        return run(() -> {
+            swerveDrive.drive(new Translation2d(0, -0.5), 0, false, false);
+        }); // Adjust time as needed
+    }
 
     
 

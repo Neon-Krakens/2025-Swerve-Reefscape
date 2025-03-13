@@ -120,31 +120,31 @@ public class RobotContainer {
     Command driveFieldOrientedDirectAngle = swerveDrive.driveFieldOriented(driveInputStream);
     swerveDrive.setDefaultCommand(driveFieldOrientedDirectAngle);
 
-    driver.povUp().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
+    driver.start().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
 
-    driver.y().toggleOnTrue(swerveDrive.cancelPathfinding());
-    driver.x().toggleOnTrue(swerveDrive.goToClosestCoralTag(true));
-    driver.b().toggleOnTrue(swerveDrive.goToClosestCoralTag(false));
+    // driver.y().toggleOnTrue(swerveDrive.cancelPathfinding());
+    // driver.x().toggleOnTrue(swerveDrive.goToClosestCoralTag(true));
+    // driver.b().toggleOnTrue(swerveDrive.goToClosestCoralTag(false));
 
     driver.a().toggleOnTrue(
-      Commands.sequence(Commands.runOnce(() -> elevator.goToLevel(1), elevator), swerveDrive.goToClosestDrop())
+      elevator.goToLevel(0)
     );
 
     driver.leftBumper().toggleOnTrue(Commands.runOnce(elevator::goDownLevel, elevator));
     driver.rightBumper().toggleOnTrue(Commands.runOnce(elevator::goUpLevel, elevator));
 
-    driver.rightTrigger().toggleOnTrue(coral.spinWheelSequence());
+    driver.rightTrigger().whileTrue(coral.spinForward()).whileFalse(coral.spinStop());
     driver.leftTrigger(0.0).whileTrue(
       Commands.run(()->{
         algae.setPosition(driver.getLeftTriggerAxis());
       },algae)
     );
 
-    driver.povLeft().whileTrue(climb.setVoltage(-0.75));
-    driver.povRight().whileTrue(climb.setVoltage(1.5));
+    driver.povUp().whileTrue(climb.bringInClimber());
+    driver.povDown().whileTrue(climb.deployClimberOut());
 
-
-    // driver.leftTrigger().whileTrue(coral.spinReverse());
+    driver.povLeft().whileTrue(swerveDrive.scootLeft());
+    driver.povRight().whileTrue(swerveDrive.scootRight());
   }
 
   /**

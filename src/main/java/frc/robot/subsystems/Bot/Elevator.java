@@ -115,7 +115,7 @@ public class Elevator extends SubsystemBase {
                 
                 if(targetLevel == 2) target = 2.3;//2.3
                 if(targetLevel == 3) target = 16.5;//16.5
-                if(targetLevel == 4) target = 38.5;//38.5
+                if(targetLevel == 4) target = 37.5;//38.5
                 atTarget = false;
                 System.out.println("Setting target level: " + targetLevel);
             },

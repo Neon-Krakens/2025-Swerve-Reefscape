@@ -38,13 +38,33 @@ public class Climb extends SubsystemBase {
         // climbMotorRight.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    double speed = 0.0;
-    public Command setVoltage(double speed) {
+    Long lastPressedIn = 0L;
+    public Command bringInClimber() {
+        // Reset the scaling if last presssed over 5 seconds ago
+        if(System.currentTimeMillis()-lastPressedIn > 5_000) {
+            speed = -0.5;
+        }
+
+        lastPressedIn = System.currentTimeMillis();
         return Commands.run(() -> {
-            this.speed = speed; 
-            System.out.println("Climb Started at speed: " + speed);
+            this.speed -= 0.075; 
+            System.out.println("Climb going in at speed: " + this.speed);
         });
     }
+
+    public Command deployClimberOut() {
+        return Commands.run(() -> {
+            this.speed = 1; 
+            System.out.println("Climb going out at speed: " + this.speed);
+        });
+    }
+
+    double speed = 0.0;
+    // public Command setVoltage(double speed) {
+    //     return Commands.run(() -> {
+    //         this.speed = speed; 
+    //     });
+    // }
 
     @Override
     public void periodic() {
