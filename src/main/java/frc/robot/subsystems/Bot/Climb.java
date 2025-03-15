@@ -39,21 +39,24 @@ public class Climb extends SubsystemBase {
     }
 
     Long lastPressedIn = 0L;
+    double speed2 = 0.0;
     public Command bringInClimber() {
         // Reset the scaling if last presssed over 5 seconds ago
         if(System.currentTimeMillis()-lastPressedIn > 5_000) {
-            speed = -0.5;
+            speed2 = -0.5;
         }
 
         lastPressedIn = System.currentTimeMillis();
         return Commands.run(() -> {
-            this.speed -= 0.075; 
+            this.speed2 -= 0.05;
+            this.speed = this.speed2; 
             System.out.println("Climb going in at speed: " + this.speed);
         });
     }
 
     public Command deployClimberOut() {
         return Commands.run(() -> {
+            this.speed2 = 0.0;
             this.speed = 1; 
             System.out.println("Climb going out at speed: " + this.speed);
         });

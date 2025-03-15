@@ -725,7 +725,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       {
         throw new RuntimeException("Cannot use robot oriented control with Alliance aware movement!");
       }
-      if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red)
+      if (DriverStation.getAlliance().isPresent())
       {
         return fieldRelativeTranslation.rotateBy(Rotation2d.k180deg);
       }

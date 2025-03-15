@@ -19,7 +19,7 @@ import frc.robot.Robot;
 
 public class Elevator extends SubsystemBase {
     private double target = 0.0;
-    private int targetLevel = 0;
+    private int targetLevel = 1;
     private boolean atTarget = false;
     private final SparkMax rightLift;
     private final SparkMax leftLift;
@@ -76,14 +76,14 @@ public class Elevator extends SubsystemBase {
         double distance = target - position;
 
         if (Math.abs(distance) < 0.5) {
-            if(target==0) leftLift.set(0.0);
+            if(target==0) leftLift.set(0.02);
             else leftLift.set(0.05);
             atTarget = true;
             return;
         }
         atTarget = false;
 
-        double speed = Math.max(Math.min(distance / 38.0, 0.3), -0.3);
+        double speed = Math.max(Math.min(distance / 38.0, 0.3), -0.2);
         if (speed < 0 && speed > -0.05) speed = -0.05; // Min speed when going dowb
         if (speed > 0 && speed < 0.1) speed = 0.1;  // Min speed when going up
 
@@ -108,7 +108,7 @@ public class Elevator extends SubsystemBase {
         return new FunctionalCommand(
             () -> {
                 targetLevel = Math.max(1, Math.min(level, 4)); // Keep within bounds
-                if(targetLevel ==1) target = 0; // Not raised and bottom corla
+                if(targetLevel == 1) target = 0; // Not raised and bottom corla
                 // if(targetLevel == 2) target = 52;//2.3
                 // if(targetLevel == 3) target = 295;
                 // if(targetLevel == 4) target = 600;
@@ -141,5 +141,8 @@ public class Elevator extends SubsystemBase {
 
     public void goDownLevel() {
         CommandScheduler.getInstance().schedule(goToLevel(targetLevel - 1));
+    }
+    public int getLevel() {
+        return targetLevel;
     }
 }

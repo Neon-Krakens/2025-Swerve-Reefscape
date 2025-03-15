@@ -24,7 +24,6 @@ public class LightSubsystem extends SubsystemBase {
     private final SendableChooser<String> chooser = new SendableChooser<>();
     private final AddressableLED m_led;
     private final AddressableLEDBuffer m_ledBuffer;
-    private int m_rainbowFirstPixelHue;
 
     public LightSubsystem() {
         // Add options to the chooser
@@ -46,7 +45,6 @@ public class LightSubsystem extends SubsystemBase {
         // Set the data
 
         m_led.setData(m_ledBuffer);
-
         m_led.start();
     }
     boolean connected = false;

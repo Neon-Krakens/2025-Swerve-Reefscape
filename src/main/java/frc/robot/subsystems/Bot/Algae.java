@@ -8,6 +8,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -40,28 +41,42 @@ public class Algae extends SubsystemBase {
     }
 
     int timeNotAtTarget = 0; // 50/s, 
+    boolean roundStarted = false;
+    double loadingPosition = 7.809;
+    double dropPosition = 6.4285;
+
+    public void loadingPosition() {
+        target = loadingPosition;
+    }
+
+    public void dropPosition() {
+        target = dropPosition;
+    }
+    double lastPosition = 0.0;
     @Override
     public void periodic() {
-        var position = stickMotor.getEncoder().getPosition();
-        var speed = (target-position)/10.0;
-        var atTarget = Math.abs(target-position)<0.1;
+        var position = -stickMotor.getEncoder().getPosition();
+        if(DriverStation.isEnabled() && !roundStarted) {
+            roundStarted = true;
+            dropPosition();
+        }
 
-        if(!atTarget) timeNotAtTarget++;
-        else timeNotAtTarget = 0;
+        var dist = target-position;
+
+        if(Math.abs(dist) <= 0.2) {
+            // At the target
+            stickMotor.set(-0.0125);
+            return;
+        }
         
-        if(speed>0.005) {
-            speed = 0.005; // Slow when going down
-            timeNotAtTarget = 0;
+        if(dist > 0) {
+            // Upward
+            stickMotor.set(-0.08);
+        } else {
+            stickMotor.set(0.05);
         }
-        // starts a 1.01x multiplier after 2 seconds of not reaching goal
-        if(timeNotAtTarget>50) { 
-            System.out.println("Not at target, multiplying "+(1+((timeNotAtTarget/50.0)/3.0)));
-            
-            // 50/s, will be at 1.6x after 1s
-            speed = speed*(1+((timeNotAtTarget/50)/3));
-            System.out.println("Speed: "+speed);
-        }
-
-        stickMotor.set(speed);
+        
     }
+
+
 }

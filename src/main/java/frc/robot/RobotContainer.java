@@ -55,12 +55,12 @@ public class RobotContainer {
    * Configures how controller inputs are processed and applied to drive commands.
    */
   public SwerveInputStream driveInputStream = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
-      () -> driver.getLeftY() * 1,
-      () -> driver.getLeftX() * 1)
+      () -> driver.getLeftY() * -1,
+      () -> driver.getLeftX() * -1)
       .cubeTranslationControllerAxis(true)
       .scaleTranslation(0.5)
       .cubeRotationControllerAxis(true)
-      .withControllerHeadingAxis(() -> driver.getRightX() * 1, () -> driver.getRightY() * 1)
+      .withControllerHeadingAxis(() -> driver.getRightX() * -1, () -> driver.getRightY() * -1)
       .deadband(Constants.DRIVER_DEADBAND)
       .allianceRelativeControl(true)
       .headingWhile(true);
@@ -127,18 +127,44 @@ public class RobotContainer {
     // driver.b().toggleOnTrue(swerveDrive.goToClosestCoralTag(false));
 
     driver.a().toggleOnTrue(
-      elevator.goToLevel(0)
+      Commands.runOnce(()->{
+        elevator.goDownLevel();
+        elevator.goDownLevel();
+        elevator.goDownLevel();
+        elevator.goDownLevel();
+
+        algae.dropPosition();
+      }, elevator)
     );
 
-    driver.leftBumper().toggleOnTrue(Commands.runOnce(elevator::goDownLevel, elevator));
-    driver.rightBumper().toggleOnTrue(Commands.runOnce(elevator::goUpLevel, elevator));
+    driver.leftBumper().toggleOnTrue(Commands.runOnce(()->{
+        elevator.goDownLevel();
 
+        if(elevator.getLevel() == 1) {
+          algae.dropPosition();
+        } else {
+          algae.loadingPosition();
+        }
+      }, elevator)
+    );
+
+    driver.rightBumper().toggleOnTrue(Commands.runOnce(()->{
+        elevator.goUpLevel();
+
+        if(elevator.getLevel() == 1) {
+          algae.dropPosition();
+        } else {
+          algae.loadingPosition();
+        }
+      }, elevator)
+    );
+    
     driver.rightTrigger().whileTrue(coral.spinForward()).whileFalse(coral.spinStop());
-    driver.leftTrigger(0.0).whileTrue(
-      Commands.run(()->{
-        algae.setPosition(driver.getLeftTriggerAxis());
-      },algae)
-    );
+    // driver.leftTrigger(0.0).whileTrue(
+    //   Commands.run(()->{
+    //     algae.setPosition(driver.getLeftTriggerAxis());
+    //   },algae)
+    // );
 
     driver.povUp().whileTrue(climb.bringInClimber());
     driver.povDown().whileTrue(climb.deployClimberOut());
