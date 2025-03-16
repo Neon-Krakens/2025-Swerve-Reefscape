@@ -48,7 +48,7 @@
   "folder": "Start 3 to GHEF",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -0.45471886169313447
   },
   "useDefaultConstraints": true
 }

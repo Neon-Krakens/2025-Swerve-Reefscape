@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -150.5844011669044
+    "rotation": 119.69915442754998
   },
   "reversed": false,
   "folder": "Start 3 to GHEF",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -0.45471886169313447
   },
   "useDefaultConstraints": true
 }

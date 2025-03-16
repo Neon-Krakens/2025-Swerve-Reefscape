@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -30.51023740611543
+    "rotation": -120.86680945113712
   },
   "reversed": false,
   "folder": "Start 2 to GHJI",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

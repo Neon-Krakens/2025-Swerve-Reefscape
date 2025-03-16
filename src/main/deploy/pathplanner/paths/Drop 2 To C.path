@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1264364848976407,
-        "y": 1.9896399088125758
+        "x": 2.1367694805194803,
+        "y": 1.9523336038961032
       },
       "isLocked": false,
       "linkedName": "Drop 2"
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 148.07912378006682
+    "rotation": 56.14898969644177
   },
   "reversed": false,
   "folder": "Drop 2 to CD EF GH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -127.33319573818581
+    "rotation": 145.3345026666938
   },
   "useDefaultConstraints": true
 }

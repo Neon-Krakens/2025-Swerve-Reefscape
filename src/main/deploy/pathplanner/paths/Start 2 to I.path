@@ -20,7 +20,7 @@
         "y": 5.228713474025974
       },
       "prevControl": {
-        "x": 5.312410305460736,
+        "x": 5.312410305460737,
         "y": 5.316656264373122
       },
       "nextControl": null,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -30.51023740611543
+    "rotation": -121.21840276434638
   },
   "reversed": false,
   "folder": "Start 2 to GHJI",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

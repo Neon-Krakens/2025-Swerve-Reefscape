@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -150.5844011669044
+    "rotation": 119.69915442754998
   },
   "reversed": false,
   "folder": "Drop 2 to CD EF GH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -127.33319573818581
+    "rotation": 145.3345026666938
   },
   "useDefaultConstraints": true
 }

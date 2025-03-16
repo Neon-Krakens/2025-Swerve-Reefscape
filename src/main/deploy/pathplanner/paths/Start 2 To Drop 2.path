@@ -20,7 +20,7 @@
         "y": 1.0548904220779218
       },
       "prevControl": {
-        "x": 3.945900974025974,
+        "x": 3.9459009740259745,
         "y": 2.1517654220779217
       },
       "nextControl": null,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -127.33319573818581
+    "rotation": 145.3345026666938
   },
   "reversed": false,
   "folder": "Start To Drops",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }
