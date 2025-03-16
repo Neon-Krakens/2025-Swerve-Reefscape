@@ -1,5 +1,14 @@
 package frc.robot.subsystems.Lighting;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.InchesPerSecond;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Seconds;
+
+import edu.wpi.first.units.TimeUnit;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,7 +24,6 @@ public class LightSubsystem extends SubsystemBase {
     private final SendableChooser<String> chooser = new SendableChooser<>();
     private final AddressableLED m_led;
     private final AddressableLEDBuffer m_ledBuffer;
-    private int m_rainbowFirstPixelHue;
 
     public LightSubsystem() {
         // Add options to the chooser
@@ -27,86 +35,75 @@ public class LightSubsystem extends SubsystemBase {
         // Add the chooser to Shuffleboard
         SmartDashboard.putData("LED Options", chooser);
 
-        m_led = new AddressableLED(9);
+        m_led = new AddressableLED(0);
 
         // Reuse buffer
-
-        // Default to a length of 60, start empty output
-
-        // Length is expensive to set, so only set it once, then just update data
-
-        m_ledBuffer = new AddressableLEDBuffer(60);
-
+        m_ledBuffer = new AddressableLEDBuffer(270);
         m_led.setLength(m_ledBuffer.getLength());
 
 
         // Set the data
 
         m_led.setData(m_ledBuffer);
-
         m_led.start();
-
-        // Create an LED pattern that sets the entire strip to solid red
-        LEDPattern red = LEDPattern.solid(Color.kRed);
-
-        // Apply the LED pattern to the data buffer
-        red.applyTo(m_ledBuffer);
-
-        // Write the data to the LED strip
-        m_led.setData(m_ledBuffer);
-        
     }
-
+    boolean connected = false;
     @Override
     public void periodic() {
+        if(!DriverStation.isDSAttached()) {
+            connected = false;
+            LEDPattern.solid(Color.kOrangeRed).breathe(Time.ofRelativeUnits(0.6, Seconds)).applyTo(m_ledBuffer);
+            m_led.setData(m_ledBuffer);
+            return;
+        }
+        if(!connected) {
+            connected = true;
+            LEDPattern.solid(Color.kGreen).applyTo(m_ledBuffer);
+            m_led.setData(m_ledBuffer);
+            return;
+        }
         // Retrieve the selected option
         String selectedMode = chooser.getSelected();
 
-        if (selectedMode == null)
-            return;
+        if (selectedMode == null) return;
+        LEDPattern pattern = null;
 
         // Perform actions based on the selected mode
         switch (selectedMode) {
             case "TEAM":
                 try {
                     if (DriverStation.getAlliance().get() == Alliance.Red) {
-                        setLightColor(255, 0, 0);
+                        pattern = LEDPattern.solid(Color.kRed);
                     } else {
-                        setLightColor(0, 0, 255);
+                        pattern = LEDPattern.solid(Color.kBlue);
                     }
                 } catch (Exception e) {
                     // TODO: handle exception
                 }
                 break;
             case "AUTO":
-                setLightColor(0, 255, 255);
+                pattern = LEDPattern.solid(Color.kAqua).breathe(Time.ofRelativeUnits(1, Seconds));
                 break;
             case "RGB":
-                // hue shift
-                setLightColor(0, 255, 0);
+                Distance LED_SPACING = Meters.of(1.0 / 60);
+                pattern = LEDPattern.rainbow(255,255).scrollAtAbsoluteSpeed(
+                    InchesPerSecond.of(80), LED_SPACING
+                );
                 break;
             default:
-                //
-                setLightColor(0, 0, 0); // Off mode
+                pattern = LEDPattern.solid(Color.kGreen).breathe(Time.ofRelativeUnits(3, Seconds));
                 break;
         }
 
+        // Apply the LED pattern to the data buffer
+        pattern.applyTo(m_ledBuffer);
+
+        // Write the data to the LED strip
+        m_led.setData(m_ledBuffer);
     }
 
     @Override
     public void simulationPeriodic() {
 
-    }
-
-
-    // Example method to set light color (implement based on your hardware)
-    private void setLightColor(int r, int g, int b) {
-        // for (var i = 0; i < m_ledBuffer.getLength() / 2; i++) {
-        //     m_ledBuffer.setLED(i, Color.kRed);
-        // }
-        // m_led.setData(m_ledBuffer);
-
-        // Code to control your lights (e.g., send PWM signals or set values for LEDs)
-        // System.out.printf("Setting lights to RGB(%d, %d, %d)%n", r, g, b);
     }
 }

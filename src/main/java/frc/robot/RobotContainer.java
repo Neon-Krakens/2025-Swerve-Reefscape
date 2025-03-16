@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.Bot.Algae;
+import frc.robot.subsystems.Bot.Climb;
 import frc.robot.subsystems.Bot.Coral;
 import frc.robot.subsystems.Bot.Elevator;
 import frc.robot.subsystems.Bot.Swerve;
@@ -44,6 +46,8 @@ public class RobotContainer {
 
   private final Elevator elevator = new Elevator();
   private final Coral coral = new Coral();
+  private final Climb climb = new Climb();
+  private final Algae algae = new Algae();
   private final LightSubsystem lights = new LightSubsystem();
 
   /**
@@ -116,21 +120,57 @@ public class RobotContainer {
     Command driveFieldOrientedDirectAngle = swerveDrive.driveFieldOriented(driveInputStream);
     swerveDrive.setDefaultCommand(driveFieldOrientedDirectAngle);
 
-    driver.povUp().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
+    driver.start().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
 
-    driver.y().toggleOnTrue(swerveDrive.cancelPathfinding());
-    driver.x().toggleOnTrue(swerveDrive.goToClosestCoralTag(true));
-    driver.b().toggleOnTrue(swerveDrive.goToClosestCoralTag(false));
+    // driver.y().toggleOnTrue(swerveDrive.cancelPathfinding());
+    // driver.x().toggleOnTrue(swerveDrive.goToClosestCoralTag(true));
+    // driver.b().toggleOnTrue(swerveDrive.goToClosestCoralTag(false));
 
     driver.a().toggleOnTrue(
-      Commands.sequence(Commands.runOnce(() -> elevator.goToLevel(1), elevator), swerveDrive.goToClosestDrop())
+      Commands.runOnce(()->{
+        elevator.goDownLevel();
+        elevator.goDownLevel();
+        elevator.goDownLevel();
+        elevator.goDownLevel();
+
+        algae.dropPosition();
+      }, elevator)
     );
 
-    driver.leftBumper().toggleOnTrue(Commands.runOnce(elevator::goDownLevel, elevator));
-    driver.rightBumper().toggleOnTrue(Commands.runOnce(elevator::goUpLevel, elevator));
+    driver.leftBumper().toggleOnTrue(Commands.runOnce(()->{
+        elevator.goDownLevel();
 
-    driver.rightTrigger().whileTrue(coral.spinForward());
-    driver.leftTrigger().whileTrue(coral.spinReverse());
+        if(elevator.getLevel() == 1) {
+          algae.dropPosition();
+        } else {
+          algae.loadingPosition();
+        }
+      }, elevator)
+    );
+
+    driver.rightBumper().toggleOnTrue(Commands.runOnce(()->{
+        elevator.goUpLevel();
+
+        if(elevator.getLevel() == 1) {
+          algae.dropPosition();
+        } else {
+          algae.loadingPosition();
+        }
+      }, elevator)
+    );
+    
+    driver.rightTrigger().whileTrue(coral.spinForward()).whileFalse(coral.spinStop());
+    // driver.leftTrigger(0.0).whileTrue(
+    //   Commands.run(()->{
+    //     algae.setPosition(driver.getLeftTriggerAxis());
+    //   },algae)
+    // );
+
+    driver.povUp().whileTrue(climb.bringInClimber());
+    driver.povDown().whileTrue(climb.deployClimberOut());
+
+    driver.povLeft().whileTrue(swerveDrive.scootLeft());
+    driver.povRight().whileTrue(swerveDrive.scootRight());
   }
 
   /**
