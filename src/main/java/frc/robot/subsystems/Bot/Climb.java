@@ -32,14 +32,14 @@ public class Climb extends SubsystemBase {
     double speed2 = 0.0;
     public Command bringInClimber() {
         return Commands.run(() -> {
-            this.speed = -0.75; // going down
+            this.speed = 0.75; // going up
             System.out.println("Climb going in at speed: " + this.speed);
         });
     }
 
     public Command deployClimberOut() {
         return Commands.run(() -> {
-            this.speed = 0.75;
+            this.speed = -0.75;
             System.out.println("Climb going out at speed: " + this.speed);
         });
     }

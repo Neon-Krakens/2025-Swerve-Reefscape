@@ -65,6 +65,17 @@ public class RobotContainer {
       // .allianceRelativeControl(true)
       .headingWhile(true);
 
+  public SwerveInputStream driveInputStreamRobotStupid = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
+      () -> driver.getLeftY() * 1,
+      () -> driver.getLeftX() * 1)
+      .cubeTranslationControllerAxis(true)
+      .scaleTranslation(0.5)
+      .cubeRotationControllerAxis(true)
+      .withControllerRotationAxis(() -> driver.getRightX() * 1)
+      .scaleRotation(0.5)
+      .deadband(Constants.DRIVER_DEADBAND)
+      // .allianceRelativeControl(true)
+      .headingWhile(true);
   /**
    * Creates a new RobotContainer and initializes all robot subsystems and
    * commands.
