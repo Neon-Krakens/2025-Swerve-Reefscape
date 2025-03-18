@@ -62,7 +62,7 @@ public class RobotContainer {
       .cubeRotationControllerAxis(true)
       .withControllerHeadingAxis(() -> driver.getRightX() * 1, () -> driver.getRightY() * 1)
       .deadband(Constants.DRIVER_DEADBAND)
-      // .allianceRelativeControl(true)
+      .allianceRelativeControl(true)
       .headingWhile(true);
 
   public SwerveInputStream driveInputStreamRobotStupid = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
@@ -71,8 +71,8 @@ public class RobotContainer {
       .cubeTranslationControllerAxis(true)
       .scaleTranslation(0.5)
       .cubeRotationControllerAxis(true)
-      .withControllerRotationAxis(() -> driver.getRightX() * 1)
-      .scaleRotation(0.5)
+      .withControllerRotationAxis(() -> driver.getRightX() * -1)
+      .scaleRotation(1)
       .deadband(Constants.DRIVER_DEADBAND)
       // .allianceRelativeControl(true)
       .headingWhile(true);
