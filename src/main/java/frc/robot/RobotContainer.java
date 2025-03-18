@@ -55,14 +55,14 @@ public class RobotContainer {
    * Configures how controller inputs are processed and applied to drive commands.
    */
   public SwerveInputStream driveInputStream = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
-      () -> driver.getLeftY() * -1,
-      () -> driver.getLeftX() * -1)
+      () -> driver.getLeftY() * 1,
+      () -> driver.getLeftX() * 1)
       .cubeTranslationControllerAxis(true)
       .scaleTranslation(0.5)
       .cubeRotationControllerAxis(true)
-      .withControllerHeadingAxis(() -> driver.getRightX() * -1, () -> driver.getRightY() * -1)
+      .withControllerHeadingAxis(() -> driver.getRightX() * 1, () -> driver.getRightY() * 1)
       .deadband(Constants.DRIVER_DEADBAND)
-      .allianceRelativeControl(true)
+      // .allianceRelativeControl(true)
       .headingWhile(true);
 
   /**

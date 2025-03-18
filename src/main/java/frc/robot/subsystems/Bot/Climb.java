@@ -15,49 +15,31 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Climb extends SubsystemBase {
-    private final SparkMax climbMotorLeft;
-    private final SparkMax climbMotorRight;
+    private final SparkMax climbMotor;
 
     // private final DigitalInput hasCoral = new DigitalInput(0);
 
     public Climb() {
-        climbMotorLeft = new SparkMax(15, MotorType.kBrushless);
-        climbMotorRight = new SparkMax(16, MotorType.kBrushless);
-
-        // Setup configuration for the left motor
-
-        // leftLift.setInverted(true);
+        climbMotor = new SparkMax(15, MotorType.kBrushless);
 
         var rightConfig = new SparkMaxConfig();
-        rightConfig.follow(climbMotorRight, true);
+    
         rightConfig.idleMode(IdleMode.kBrake);
-        climbMotorLeft.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        // var leftConfig = new SparkMaxConfig();
-        // leftConfig.idleMode(IdleMode.kBrake);
-        // climbMotorRight.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        climbMotor.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     Long lastPressedIn = 0L;
     double speed2 = 0.0;
     public Command bringInClimber() {
-        // Reset the scaling if last presssed over 5 seconds ago
-        if(System.currentTimeMillis()-lastPressedIn > 5_000) {
-            speed2 = -0.5;
-        }
-
-        lastPressedIn = System.currentTimeMillis();
         return Commands.run(() -> {
-            this.speed2 -= 0.05;
-            this.speed = this.speed2; 
+            this.speed = -0.75; // going down
             System.out.println("Climb going in at speed: " + this.speed);
         });
     }
 
     public Command deployClimberOut() {
         return Commands.run(() -> {
-            this.speed2 = 0.0;
-            this.speed = 1; 
+            this.speed = 0.75;
             System.out.println("Climb going out at speed: " + this.speed);
         });
     }
@@ -71,7 +53,7 @@ public class Climb extends SubsystemBase {
 
     @Override
     public void periodic() {
-        climbMotorRight.setVoltage(speed);
+        climbMotor.set(speed);
         speed = 0.0;
     }
 }

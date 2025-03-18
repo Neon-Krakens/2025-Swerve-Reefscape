@@ -48,7 +48,7 @@
   "folder": "Drop 1 to AB IJ KL ",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -0.7638984609299808
+    "rotation": -0.7638984609299809
   },
   "useDefaultConstraints": true
 }

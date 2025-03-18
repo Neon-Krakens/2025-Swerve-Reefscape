@@ -5,12 +5,15 @@
   "pathFolders": [
     "Drop 1 to AB IJ KL ",
     "Drop 2 to CD EF GH",
-    "Start 3 to GHEF",
+    "New Paths",
     "Start 1 to IJKL",
     "Start 2 to GHJI",
+    "Start 3 to GHEF",
     "Start To Drops"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "New Paths"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
