@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.112601461038961,
-        "y": 6.147524350649351
+        "x": 7.22475,
+        "y": 6.17
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.377765049742976,
-        "y": 6.203636847716294
+        "x": 7.657508814632579,
+        "y": 6.285144478397278
       },
-      "isLocked": true,
-      "linkedName": "Start 2"
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.67,
-        "y": 4.2
+        "x": 5.078388798701298,
+        "y": 5.228713474025974
       },
       "prevControl": {
-        "x": 5.71273538961039,
-        "y": 5.4108360389610395
+        "x": 4.7429968698328935,
+        "y": 5.121383384993233
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "G"
+      "linkedName": "I"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -121.21840276434638
   },
   "reversed": false,
-  "folder": "Start 2 to GHJI",
+  "folder": "New Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -146.61148642388846
   },
   "useDefaultConstraints": true
 }

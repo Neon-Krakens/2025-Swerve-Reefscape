@@ -48,7 +48,7 @@
   "folder": "Drop 2 to CD EF GH",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -148.57043438516155
+    "rotation": 120.27636594589025
   },
   "useDefaultConstraints": true
 }

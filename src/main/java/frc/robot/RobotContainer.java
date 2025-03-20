@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.Bot.Algae;
+import frc.robot.subsystems.Bot.IntakeArm;
 import frc.robot.subsystems.Bot.Climb;
 import frc.robot.subsystems.Bot.Coral;
 import frc.robot.subsystems.Bot.Elevator;
@@ -47,7 +47,7 @@ public class RobotContainer {
   private final Elevator elevator = new Elevator();
   private final Coral coral = new Coral();
   private final Climb climb = new Climb();
-  private final Algae algae = new Algae();
+  private final IntakeArm algae = new IntakeArm();
   private final LightSubsystem lights = new LightSubsystem();
 
   /**
@@ -62,7 +62,7 @@ public class RobotContainer {
       .cubeRotationControllerAxis(true)
       .withControllerHeadingAxis(() -> driver.getRightX() * 1, () -> driver.getRightY() * 1)
       .deadband(Constants.DRIVER_DEADBAND)
-      .allianceRelativeControl(true)
+      // .allianceRelativeControl(true)
       .headingWhile(true);
 
   public SwerveInputStream driveInputStreamRobotStupid = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
@@ -192,7 +192,7 @@ public class RobotContainer {
    * @return the command to run in autonomous mode
    */
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("Start 1, I, 4");
+    return new PathPlannerAuto("Mid G Auto");
   }
 
   public CommandXboxController getController() {
