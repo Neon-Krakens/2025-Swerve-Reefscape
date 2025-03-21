@@ -93,17 +93,17 @@ public class Elevator extends SubsystemBase {
         leftLift.set(speed);
     }
 
-    // @Override
-    // public void simulationPeriodic() {
-    //     if (Robot.isSimulation()) {
-    //         double last = leftLift.getEncoder().getPosition(); // 0 to 660\
-    //         if(Math.abs(target - last) < 10) {
-    //             atTarget = true;
-    //             return;
-    //         }
-    //         leftLift.getEncoder().setPosition(last+liftSpeed*30);
-    //     }
-    // }
+    @Override
+    public void simulationPeriodic() {
+        if (Robot.isSimulation()) {
+            double last = leftLift.getEncoder().getPosition(); // 0 to 660\
+            if(Math.abs(target - last) < 10) {
+                atTarget = true;
+                return;
+            }
+            leftLift.getEncoder().setPosition(last+-liftSpeed*30);
+        }
+    }
 
     private Command setTargetLevel(int level) {
         return new FunctionalCommand(

@@ -41,9 +41,9 @@ public class Robot extends TimedRobot {
   public Robot() {
     robotContainer = new RobotContainer();
     // http://roborio-3822-frc.local:1181/
-    UsbCamera topCamera = CameraServer.startAutomaticCapture();
-    topCamera.setResolution(640, 480);
-    topCamera.setFPS(30);
+    // UsbCamera topCamera = CameraServer.startAutomaticCapture();
+    // topCamera.setResolution(640, 480);
+    // topCamera.setFPS(30);
   }
 
   /**

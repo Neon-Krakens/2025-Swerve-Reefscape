@@ -4,6 +4,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -40,7 +42,7 @@ public class RobotContainer {
 
   /** Xbox controller used for driver input. */
   private final CommandXboxController driver = new CommandXboxController(0);
-
+private final SendableChooser<String> autos = new SendableChooser<>();
   /** Main drive subsystem for robot movement. */
   private final Swerve swerveDrive = Swerve.getInstance();
 
@@ -62,7 +64,7 @@ public class RobotContainer {
       .cubeRotationControllerAxis(true)
       .withControllerHeadingAxis(() -> driver.getRightX() * 1, () -> driver.getRightY() * 1)
       .deadband(Constants.DRIVER_DEADBAND)
-      // .allianceRelativeControl(true)
+      .allianceRelativeControl(true)
       .headingWhile(true);
 
   public SwerveInputStream driveInputStreamRobotStupid = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
@@ -92,6 +94,17 @@ public class RobotContainer {
 
     configureBindings();
     setupPathPlannerCommands();
+
+    autos.addOption("Left1", "LEFT1");
+    autos.addOption("Left2", "LEFT2");
+
+    autos.setDefaultOption("Middle", "MID");
+    
+    autos.addOption("Right1", "RIGHT1");
+    autos.addOption("Right2", "RIGHT2");
+
+    // Add the chooser to Shuffleboard
+    SmartDashboard.putData("Auto Chooser", autos);
 
     CommandScheduler.getInstance().onCommandInitialize(command -> {
       System.out.println("Command Started: " + command.getName());
@@ -192,7 +205,24 @@ public class RobotContainer {
    * @return the command to run in autonomous mode
    */
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("Mid G Auto");
+    String selectedAuto = autos.getSelected();
+
+    switch (selectedAuto) {
+      case "LEFT1":
+        return new PathPlannerAuto("Left Auto 1 Coral");
+      case "LEFT2":
+        return new PathPlannerAuto("Left Auto 2 Coral");
+      case "MID":
+        return new PathPlannerAuto("Mid Auto");
+      case "RIGHT1":
+        return new PathPlannerAuto("Right Auto 1 Coral");
+      case "RIGHT2":
+        return new PathPlannerAuto("Right Auto 2 Coral");
+      default:
+        break;
+    }
+
+    return new PathPlannerAuto("Mid Auto");
   }
 
   public CommandXboxController getController() {

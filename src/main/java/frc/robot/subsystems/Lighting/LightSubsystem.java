@@ -27,7 +27,8 @@ public class LightSubsystem extends SubsystemBase {
 
     public LightSubsystem() {
         // Add options to the chooser
-        chooser.setDefaultOption("Off", "OFF");
+        chooser.setDefaultOption("Idle", "IDLE");
+        chooser.addOption("Off", "OFF");
         chooser.addOption("Automatic", "AUTO");
         chooser.addOption("Rainbow", "RGB");
         chooser.addOption("Team", "TEAM");
@@ -56,12 +57,36 @@ public class LightSubsystem extends SubsystemBase {
             m_led.setData(m_ledBuffer);
             return;
         }
+
         if(!connected) {
             connected = true;
             LEDPattern.solid(Color.kGreen).applyTo(m_ledBuffer);
             m_led.setData(m_ledBuffer);
             return;
         }
+
+        if(DriverStation.isAutonomousEnabled()) {
+            LEDPattern.solid(Color.kAqua).breathe(Time.ofRelativeUnits(1, Seconds)).applyTo(m_ledBuffer);
+            m_led.setData(m_ledBuffer);
+            return;
+        }
+
+        if(DriverStation.isTeleopEnabled()) {
+            LEDPattern pattern = null;
+            try {
+                if (DriverStation.getAlliance().get() == Alliance.Red) {
+                    pattern = LEDPattern.solid(Color.kRed);
+                } else {
+                    pattern = LEDPattern.solid(Color.kBlue);
+                }
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            pattern.applyTo(m_ledBuffer);
+            m_led.setData(m_ledBuffer);
+            return;
+        }
+
         // Retrieve the selected option
         String selectedMode = chooser.getSelected();
 
@@ -90,6 +115,9 @@ public class LightSubsystem extends SubsystemBase {
                     InchesPerSecond.of(80), LED_SPACING
                 );
                 break;
+            case "OFF":
+                pattern = LEDPattern.solid(Color.kBlack);
+                break;
             default:
                 pattern = LEDPattern.solid(Color.kGreen).breathe(Time.ofRelativeUnits(3, Seconds));
                 break;
@@ -100,10 +128,5 @@ public class LightSubsystem extends SubsystemBase {
 
         // Write the data to the LED strip
         m_led.setData(m_ledBuffer);
-    }
-
-    @Override
-    public void simulationPeriodic() {
-
     }
 }

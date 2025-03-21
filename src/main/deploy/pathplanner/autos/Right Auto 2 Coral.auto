@@ -1,0 +1,73 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right to F"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Raise Elevator 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Deposit Coral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Raise Elevator 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reverse Drop 2 To E"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Drop 2 To C"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Raise Elevator 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Deposit Coral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Raise Elevator 1"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "New Paths",
+  "choreoAuto": false
+}

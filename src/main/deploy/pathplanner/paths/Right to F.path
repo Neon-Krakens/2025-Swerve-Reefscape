@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 5.519987824675325,
+        "x": 5.192349837662338,
         "y": 3.0634537337662335
       },
       "prevControl": {
-        "x": 5.278479541147603,
+        "x": 4.950841554134616,
         "y": 3.128058292332123
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "F"
+      "linkedName": "E"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 120.27636594589025
+    "rotation": 119.69915442754998
   },
   "reversed": false,
   "folder": "New Paths",
