@@ -5,15 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Left to I"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Raise Elevator 4"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left to I"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Raise Elevator 4"
+                }
+              }
+            ]
           }
         },
         {
@@ -23,15 +30,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Raise Elevator 1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Drop Position"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Raise Elevator 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Drop Position"
+                }
+              }
+            ]
           }
         },
         {
@@ -43,19 +57,26 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.5
+            "waitTime": 1.0
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Load Position"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Raise Elevator 2"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Load Position"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Raise Elevator 2"
+                }
+              }
+            ]
           }
         },
         {
@@ -83,15 +104,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Raise Elevator 1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Drop Position"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Raise Elevator 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Drop Position"
+                }
+              }
+            ]
           }
         }
       ]
