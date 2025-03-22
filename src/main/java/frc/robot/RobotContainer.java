@@ -187,6 +187,18 @@ private final SendableChooser<String> autos = new SendableChooser<>();
           algae.dropPosition();
         } else {
           algae.loadingPosition();
+          if(elevator.getLevel() == 2) {
+            // coral.lockInCoral();
+            
+            CommandScheduler.getInstance().schedule(
+              Commands.sequence(
+                Commands.waitSeconds(0.5),
+                coral.spinForward(),
+                Commands.waitSeconds(0.3),
+                coral.spinStop()
+              )
+            );
+          }
         }
       }, elevator)
     );
