@@ -29,6 +29,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Drop Position"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Reverse Drop 1 To I"
@@ -38,6 +44,12 @@
           "type": "wait",
           "data": {
             "waitTime": 1.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Load Position"
           }
         },
         {
@@ -74,6 +86,12 @@
           "type": "named",
           "data": {
             "name": "Raise Elevator 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Drop Position"
           }
         }
       ]

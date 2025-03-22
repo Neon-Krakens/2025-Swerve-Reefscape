@@ -125,10 +125,17 @@ private final SendableChooser<String> autos = new SendableChooser<>();
     NamedCommands.registerCommand("Raise Elevator 3", elevator.goToLevel(3));
     NamedCommands.registerCommand("Raise Elevator 2", elevator.goToLevel(2));
     NamedCommands.registerCommand("Raise Elevator 1", elevator.goToLevel(1));
-    NamedCommands.registerCommand("Raise Elevator 0", elevator.goToLevel(0));
 
     NamedCommands.registerCommand("Deposit Coral", coral.spinWheelSequence());
     NamedCommands.registerCommand("Lock Coral", coral.lockInCoral());
+    
+    NamedCommands.registerCommand("Load Position", Commands.runOnce(()->{
+      algae.loadingPosition();
+    }, algae));
+
+    NamedCommands.registerCommand("Drop Position", Commands.runOnce(()->{
+      algae.dropPosition();
+    }, algae));
   }
 
   /**

@@ -55,6 +55,7 @@ public class IntakeArm extends SubsystemBase {
     public void dropPosition() {
         target = dropPosition;
     }
+    
     double lastPosition = 0.0;
     long zeroedAt = 0L;
     @Override
