@@ -30,6 +30,19 @@ public class Coral extends SubsystemBase {
             })// Stop after 3 seconds
         );
     }
+    public Command lockInCoral() {
+        return Commands.sequence(
+            Commands.runOnce(() -> {
+                wheelMotor.set(-0.35);
+                System.out.println("Coral Started");
+            }), // Start spinning
+            Commands.waitSeconds(0.25),               // Wait for 3 seconds
+            Commands.runOnce(() -> {
+                wheelMotor.set(0);
+                System.out.println("Coral stopped");
+            })// Stop after 3 seconds
+        );
+    }
 
     public Command spinForward() {
         return Commands.run(() -> {

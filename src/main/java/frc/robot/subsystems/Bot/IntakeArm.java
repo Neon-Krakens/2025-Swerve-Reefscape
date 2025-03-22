@@ -45,7 +45,7 @@ public class IntakeArm extends SubsystemBase {
 
     int timeNotAtTarget = 0; // 50/s, 
     boolean roundStarted = false;
-    double loadingPosition = 8.209;
+    double loadingPosition = 8.009;
     double dropPosition = 6.4285;
 
     public void loadingPosition() {
@@ -75,7 +75,7 @@ public class IntakeArm extends SubsystemBase {
                 return;
             } else {
                 System.out.println("ZEROING ARM");
-                stickMotor.set(0.05);
+                stickMotor.set(0.04);
                 return;
             }
         }
@@ -90,7 +90,7 @@ public class IntakeArm extends SubsystemBase {
 
         if(Math.abs(dist) <= 0.2) {
             // At the target
-            stickMotor.set(-0.0125);
+            stickMotor.set(-0.013);
             return;
         }
         
