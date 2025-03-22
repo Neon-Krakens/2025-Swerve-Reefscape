@@ -104,6 +104,9 @@ public class Swerve extends SubsystemBase {
      * @throws RuntimeException if swerve drive creation fails
      */
     public Swerve() {
+        // SmartDashboard.putBoolean("Auto Align Left", false);
+        // SmartDashboard.putBoolean("Auto Align Right", false);
+
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
         try {
             swerveDrive = new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve"))
@@ -286,8 +289,8 @@ public class Swerve extends SubsystemBase {
                 boolean blueTag = tag.ID == 17 || tag.ID == 18 || tag.ID == 19 || tag.ID == 20 || tag.ID == 21 || tag.ID == 22;
 
                 if(
-                    (redTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) || 
-                    (blueTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+                    (redTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) || 
+                    (blueTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
                 ) {
                     pose = pose.rotateAround(pose.getTranslation(), Rotation2d.fromDegrees(180)); 
 
@@ -297,9 +300,10 @@ public class Swerve extends SubsystemBase {
                     // Calculate the change in position
                     double deltaX = (-0.4) * Math.cos(angle);
                     double deltaY = (-0.4) * Math.sin(angle);
+                    
                     // Pose lined up with target
                     Pose2d newPose = new Pose2d(pose.getX() + deltaX, pose.getY() + deltaY, pose.getRotation());
-                    double offset = alignLeftSide?0.09:0.43; //Left offset 0.1
+                    double offset = alignLeftSide ? 0.10 : 0.44; //Left offset 0.1
 
                     // Now move left
                     double leftX = (offset) * Math.sin(angle); // Use -sin for leftward movement
@@ -314,7 +318,6 @@ public class Swerve extends SubsystemBase {
     
             // Find the closest coral tag
             Pose2d closestCoral = this.getPose().nearest(poses);
-            closestCoral = closestCoral.rotateAround(closestCoral.getTranslation(), Rotation2d.fromDegrees(90));
             // Schedule the robot to move to the new adjusted pose
             CommandScheduler.getInstance().schedule(driveToPose(closestCoral));
         });
@@ -389,6 +392,15 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {
+        // if(SmartDashboard.getBoolean("Auto Align Left", false)) {
+        //     SmartDashboard.putBoolean("Auto Align Left", false);
+            
+        //     CommandScheduler.getInstance().schedule(goToClosestCoralTag(true));
+        // }
+        // if(SmartDashboard.getBoolean("Auto Align Right", false)) {
+        //     SmartDashboard.putBoolean("Auto Align Right", false);
+        //     CommandScheduler.getInstance().schedule(goToClosestCoralTag(false));
+        // }
         // When vision is enabled we must manually update odometry in SwerveDrive
         if (visionDriveTest) {
             swerveDrive.updateOdometry();
