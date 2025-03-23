@@ -59,9 +59,7 @@ private final SendableChooser<String> autos = new SendableChooser<>();
   public SwerveInputStream driveInputStream = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
       () -> driver.getLeftY() * 1,
       () -> driver.getLeftX() * 1)
-      .cubeTranslationControllerAxis(true)
       .scaleTranslation(0.5)
-      .cubeRotationControllerAxis(true)
       .withControllerHeadingAxis(() -> driver.getRightX() * 1, () -> driver.getRightY() * 1)
       .deadband(Constants.DRIVER_DEADBAND)
       .allianceRelativeControl(true)
