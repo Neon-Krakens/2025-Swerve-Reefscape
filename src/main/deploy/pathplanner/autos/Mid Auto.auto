@@ -5,15 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Mid to G"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Raise Elevator 4"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Mid to G"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Raise Elevator 4"
+                }
+              }
+            ]
           }
         },
         {

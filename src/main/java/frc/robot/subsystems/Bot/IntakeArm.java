@@ -46,7 +46,7 @@ public class IntakeArm extends SubsystemBase {
     int timeNotAtTarget = 0; // 50/s, 
     boolean roundStarted = false;
     double loadingPosition = 8.009;
-    double dropPosition = 6.4285;
+    double dropPosition = 6.7285;
 
     public void loadingPosition() {
         target = loadingPosition;
@@ -91,7 +91,7 @@ public class IntakeArm extends SubsystemBase {
 
         if(Math.abs(dist) <= 0.2) {
             // At the target
-            stickMotor.set(-0.013);
+            stickMotor.set(-0.016); // was -0.013
             return;
         }
         
