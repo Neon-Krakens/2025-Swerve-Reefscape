@@ -5,127 +5,75 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Right to F"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Raise Elevator 4"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "Deposit Coral"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Raise Elevator 1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Drop Position"
-                }
-              }
-            ]
+            "name": "Set Elevator 4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Reverse Drop 2 To E"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Load Position"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Raise Elevator 2"
-                }
-              }
-            ]
+            "pathName": "C5 to 3R"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Lock Coral"
+            "name": "Shoot Coral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Elevator 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Drop 2 To C"
+            "pathName": "3R to CS2"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Raise Elevator 4"
+            "name": "Wait For Coral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CS2 to 2R"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Deposit Coral"
+            "name": "Set Elevator 4"
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Raise Elevator 1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Drop Position"
-                }
-              }
-            ]
+            "name": "Shoot Coral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Elevator 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2R to CS2"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "New Paths",
+  "folder": null,
   "choreoAuto": false
 }

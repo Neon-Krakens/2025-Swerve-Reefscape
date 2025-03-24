@@ -12,12 +12,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeArm extends SubsystemBase {
     private final SparkMax stickMotor;
-    // private final DigitalInput hasCoral = new DigitalInput(0);
+    private final DigitalInput hasCoral = new DigitalInput(0);
 
     public IntakeArm() {
         stickMotor = new SparkMax(14, MotorType.kBrushless);
@@ -31,6 +32,16 @@ public class IntakeArm extends SubsystemBase {
 
     double speed = 0.0;
     double target = 0.0;
+
+    public Command waitForCoral() {
+        return new FunctionalCommand(
+            () -> {},
+            () -> {},
+            interrupted -> {},
+            () -> hasCoral.get(), // Ends when at the target
+            this
+        );
+    }
 
     public Command setSpeed(double speed) {
         return Commands.run(() -> {

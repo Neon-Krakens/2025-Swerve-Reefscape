@@ -5,40 +5,33 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Mid to G"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Raise Elevator 4"
-                }
-              }
-            ]
+            "name": "Set Elevator 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle to 4R"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Deposit Coral"
+            "name": "Shoot Coral"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Raise Elevator 1"
+            "name": "Set Elevator 1"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "New Paths",
+  "folder": null,
   "choreoAuto": false
 }

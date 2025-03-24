@@ -105,7 +105,7 @@ public class Elevator extends SubsystemBase {
         }
     }
 
-    private Command setTargetLevel(int level) {
+    public Command setTargetLevel(int level) {
         return new FunctionalCommand(
             () -> {
                 targetLevel = Math.max(1, Math.min(level, 4)); // Keep within bounds

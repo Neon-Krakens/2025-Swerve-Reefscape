@@ -225,8 +225,7 @@ public class SwerveDrive implements AutoCloseable
       Pose2d startingPose)
   {
     this.attainableMaxTranslationalSpeedMetersPerSecond = this.maxChassisSpeedMPS = maxSpeedMPS;
-    this.attainableMaxRotationalVelocityRadiansPerSecond = Math.PI *
-                                                           2; // Defaulting to something reasonable for most robots
+    this.attainableMaxRotationalVelocityRadiansPerSecond = Math.PI * 2; // Defaulting to something reasonable for most robots
     swerveDriveConfiguration = config;
     swerveController = new SwerveController(controllerConfig);
     // Create Kinematics from swerve module locations.
@@ -660,6 +659,7 @@ public class SwerveDrive implements AutoCloseable
   {
     this.maxChassisSpeedMPS = maxTranslationalSpeedMetersPerSecond;
     this.swerveController.config.maxAngularVelocity = maxRotationalVelocityRadiansPerSecond;
+    System.out.println("Max ROTAION Speed: " + this.swerveController.config.maxAngularVelocity);
   }
 
   /**

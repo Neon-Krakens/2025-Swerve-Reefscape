@@ -4,8 +4,10 @@ import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -16,6 +18,8 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,14 +32,18 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.DriveToPath;
 import frc.robot.subsystems.Vision.Vision.Cameras;
 import swervelib.SwerveDrive;
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveMath;
 
+import org.json.simple.parser.ParseException;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -111,9 +119,13 @@ public class Swerve extends SubsystemBase {
         try {
             swerveDrive = new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve"))
                     .createSwerveDrive(
-                            Constants.MAX_SPEED.in(MetersPerSecond),
-                            new Pose2d(new Translation2d(Meter.of(8.774), Meter.of(4.026)),
-                                    Rotation2d.fromDegrees(0)));
+                        Constants.MAX_SPEED.in(MetersPerSecond),
+                         new Pose2d(
+                            new Translation2d(Meter.of(8.774),
+                            Meter.of(4.026)),
+                            Rotation2d.fromDegrees(0)
+                        )
+                    );
         } catch (Exception e) {
             throw new RuntimeException("Failed to create swerve drive", e);
         }
@@ -123,6 +135,7 @@ public class Swerve extends SubsystemBase {
         swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation);
         swerveDrive.setModuleEncoderAutoSynchronize(true, 1);
         swerveDrive.pushOffsetsToEncoders();
+        swerveDrive.setMaximumAllowableSpeeds(Constants.MAX_SPEED.in(MetersPerSecond), Constants.MAX_ANGULAR_VELOCITY);
 
         if (visionDriveTest) {
             setupPhotonVision();
@@ -131,6 +144,56 @@ public class Swerve extends SubsystemBase {
             swerveDrive.stopOdometryThread();
         }
         setupPathPlanner();
+        loadPaths();
+    }
+
+     // Path Planning Paths
+    public PathPlannerPath Z1R;
+    public PathPlannerPath Z1L;
+    public PathPlannerPath Z2R;
+    public PathPlannerPath Z2L;
+    public PathPlannerPath Z3R;
+    public PathPlannerPath Z3L;
+    public PathPlannerPath Z4R;
+    public PathPlannerPath Z4L;
+    public PathPlannerPath Z5R;
+    public PathPlannerPath Z5L;
+    public PathPlannerPath Z6R;
+    public PathPlannerPath Z6L;
+
+    private void loadPaths() {
+        try {
+            System.out.println("\n[Path Loading] Loading paths...");
+            Z1R = PathPlannerPath.fromPathFile("1R");
+            Z1L = PathPlannerPath.fromPathFile("1L");
+            Z2R = PathPlannerPath.fromPathFile("2R");
+            Z2L = PathPlannerPath.fromPathFile("2L");
+            Z3R = PathPlannerPath.fromPathFile("3R");
+            Z3L = PathPlannerPath.fromPathFile("3L");
+            Z4R = PathPlannerPath.fromPathFile("4R");
+            Z4L = PathPlannerPath.fromPathFile("4L");
+            Z5R = PathPlannerPath.fromPathFile("5R");
+            Z5L = PathPlannerPath.fromPathFile("5L");
+            Z6R = PathPlannerPath.fromPathFile("6R");
+            Z6L = PathPlannerPath.fromPathFile("6L");
+            System.out.println("-> All paths loaded successfully");
+        } catch (FileVersionException | IOException | ParseException e) {
+            System.err.println("!! ERROR LOADING PATHS !!");
+            e.printStackTrace();
+            // Handle null paths gracefully
+            Z1R = null;
+            Z1L = null;
+            Z2R = null;
+            Z2L = null;
+            Z3R = null;
+            Z3L = null;
+            Z4R = null;
+            Z4L = null;
+            Z5R = null;
+            Z5L = null;
+            Z6R = null;
+            Z6L = null;
+        }
     }
 
     /**
@@ -177,6 +240,7 @@ public class Swerve extends SubsystemBase {
         }
 
         PathfindingCommand.warmupCommand().schedule();
+
     }
 
     // ID 17: 3.82665265066028, 2.892707548812102, 60.123940267858615
@@ -281,6 +345,12 @@ public class Swerve extends SubsystemBase {
         return run(() -> {
             Cameras camera = Cameras.CENTER_CAM;
             List<Pose2d> poses = new ArrayList<>();
+            HashMap<Pose2d, Integer> tagMap = new HashMap<>();
+
+            if(!DriverStation.getAlliance().isPresent()) {
+                System.out.println("Alliance not present");
+                return;
+            }
             
             // Collect the valid coral tag poses
             camera.getFieldLayout().getTags().forEach(tag -> {
@@ -292,34 +362,53 @@ public class Swerve extends SubsystemBase {
                     (redTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) || 
                     (blueTag && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
                 ) {
-                    pose = pose.rotateAround(pose.getTranslation(), Rotation2d.fromDegrees(180)); 
-
-                    Rotation2d rotation = pose.getRotation();
-                    double angle = rotation.getRadians();
-
-                    // Calculate the change in position
-                    double deltaX = (-0.4) * Math.cos(angle);
-                    double deltaY = (-0.4) * Math.sin(angle);
-                    
-                    // Pose lined up with target
-                    Pose2d newPose = new Pose2d(pose.getX() + deltaX, pose.getY() + deltaY, pose.getRotation());
-                    double offset = alignLeftSide ? 0.10 : 0.44; //Left offset 0.1
-
-                    // Now move left
-                    double leftX = (offset) * Math.sin(angle); // Use -sin for leftward movement
-                    double leftY = (-offset) * Math.cos(angle);  // Use cos for leftward movement
-
-                    newPose = new Pose2d(newPose.getX() + leftX, newPose.getY() + leftY, newPose.getRotation());
-
-                    poses.add(newPose);
+                    poses.add(pose);
+                    tagMap.put(pose, tag.ID);
                 }
             });
+
+            var closest = this.getPose().nearest(poses);
+            var closestID = tagMap.get(closest);
+
+            PathPlannerPath path = null;
+            switch (closestID) {
+                case 6: 
+                case 19: 
+                    path = alignLeftSide? Z6L : Z6R;
+                    break;
+                case 7: 
+                case 18: 
+                    path = alignLeftSide? Z1L : Z1R;
+                    break;
+                case 8: 
+                case 17: 
+                    path = alignLeftSide? Z2L : Z2R;
+                    break;
+                case 9: 
+                case 22: 
+                    path = alignLeftSide? Z3L : Z3R;
+                    break;
+                case 10: 
+                case 21: 
+                    path = alignLeftSide? Z4L : Z4R;
+                    break;
+                case 11: 
+                case 20: 
+                    path = alignLeftSide? Z5L : Z5R;
+                    break;
+                default:
+                    break;
+            }
+
+            Command pathFollowingCommand = AutoBuilder.pathfindThenFollowPath(path, new PathConstraints(
+                Constants.MAX_SPEED.in(MetersPerSecond) * 0.5, // 50% of max velocity
+                Constants.MAX_SPEED.in(MetersPerSecond) * 0.4, // 50% of max acceleration
+                Constants.MAX_ANGULAR_VELOCITY * 0.7, // 70% of max angular velocity
+                Constants.MAX_ANGULAR_VELOCITY * 0.7 // 70% of max angular acceleration
+            ));
             swerveDrive.field.getObject("TAGS").setPoses(poses);
-    
-            // Find the closest coral tag
-            Pose2d closestCoral = this.getPose().nearest(poses);
-            // Schedule the robot to move to the new adjusted pose
-            CommandScheduler.getInstance().schedule(driveToPose(closestCoral));
+
+            pathFollowingCommand.schedule();
         });
     }
 
@@ -488,8 +577,9 @@ public class Swerve extends SubsystemBase {
     public Command driveToPose(Pose2d pose) {
         PathConstraints constraints = new PathConstraints(
                 swerveDrive.getMaximumChassisVelocity(), 4.0,
-                swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
-        
+                Constants.MAX_ANGULAR_VELOCITY, 
+                Constants.MAX_ANGULAR_VELOCITY);
+                
         return AutoBuilder.pathfindToPose(
                 pose,
                 constraints,
@@ -514,26 +604,6 @@ public class Swerve extends SubsystemBase {
                 scaledInputs.getY(),
                 headingX,
                 headingY,
-                getHeading().getRadians(),
-                Constants.MAX_SPEED2);
-    }
-
-    /**
-     * Get the chassis speeds based on controller input of 1 joystick and one angle.
-     * Control the robot at an offset of
-     * 90deg.
-     *
-     * @param xInput X joystick input for the robot to move in the X direction.
-     * @param yInput Y joystick input for the robot to move in the Y direction.
-     * @param angle  The angle in as a {@link Rotation2d}.
-     * @return {@link ChassisSpeeds} which can be sent to the Swerve Drive.
-     */
-    public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle) {
-        Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
-
-        return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(),
-                scaledInputs.getY(),
-                angle.getRadians(),
                 getHeading().getRadians(),
                 Constants.MAX_SPEED2);
     }

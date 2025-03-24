@@ -59,20 +59,17 @@ private final SendableChooser<String> autos = new SendableChooser<>();
   public SwerveInputStream driveInputStream = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
       () -> driver.getLeftY() * 1,
       () -> driver.getLeftX() * 1)
-      .scaleTranslation(0.5)
       .withControllerHeadingAxis(() -> driver.getRightX() * 1, () -> driver.getRightY() * 1)
       .deadband(Constants.DRIVER_DEADBAND)
+      .scaleTranslation(0.5)
       .allianceRelativeControl(true)
       .headingWhile(true);
 
   public SwerveInputStream driveInputStreamRobotStupid = SwerveInputStream.of(swerveDrive.getSwerveDrive(),
       () -> driver.getLeftY() * 1,
       () -> driver.getLeftX() * 1)
-      .cubeTranslationControllerAxis(true)
       .scaleTranslation(0.5)
-      .cubeRotationControllerAxis(true)
       .withControllerRotationAxis(() -> driver.getRightX() * -1)
-      .scaleRotation(1)
       .deadband(Constants.DRIVER_DEADBAND)
       // .allianceRelativeControl(true)
       .headingWhile(true);
@@ -93,12 +90,8 @@ private final SendableChooser<String> autos = new SendableChooser<>();
     configureBindings();
     setupPathPlannerCommands();
 
-    autos.addOption("Left1", "LEFT1");
     autos.addOption("Left2", "LEFT2");
-
     autos.setDefaultOption("Middle", "MID");
-    
-    autos.addOption("Right1", "RIGHT1");
     autos.addOption("Right2", "RIGHT2");
 
     // Add the chooser to Shuffleboard
@@ -119,19 +112,22 @@ private final SendableChooser<String> autos = new SendableChooser<>();
 
   private void setupPathPlannerCommands() {
     // Commands for PathPlanner auto routines
-    NamedCommands.registerCommand("Raise Elevator 4", elevator.goToLevel(4));
-    NamedCommands.registerCommand("Raise Elevator 3", elevator.goToLevel(3));
-    NamedCommands.registerCommand("Raise Elevator 2", elevator.goToLevel(2));
-    NamedCommands.registerCommand("Raise Elevator 1", elevator.goToLevel(1));
+    NamedCommands.registerCommand("Set Elevator 4", elevator.goToLevel(4));
+    NamedCommands.registerCommand("Set Elevator 3", elevator.goToLevel(3));
+    NamedCommands.registerCommand("Set Elevator 2", elevator.goToLevel(2));
+    NamedCommands.registerCommand("Set Elevator 1", elevator.goToLevel(1));
 
-    NamedCommands.registerCommand("Deposit Coral", coral.spinWheelSequence());
+    NamedCommands.registerCommand("Wait For Coral", algae.waitForCoral());
+
+  
+    NamedCommands.registerCommand("Shoot Coral", coral.spinWheelSequence());
     NamedCommands.registerCommand("Lock Coral", coral.lockInCoral());
     
-    NamedCommands.registerCommand("Load Position", Commands.runOnce(()->{
+    NamedCommands.registerCommand("Catcher Out", Commands.runOnce(()->{
       algae.loadingPosition();
     }, algae));
 
-    NamedCommands.registerCommand("Drop Position", Commands.runOnce(()->{
+    NamedCommands.registerCommand("Catcher In", Commands.runOnce(()->{
       algae.dropPosition();
     }, algae));
   }
