@@ -149,8 +149,9 @@ private final SendableChooser<String> autos = new SendableChooser<>();
     driver.start().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
 
     driver.y().toggleOnTrue(swerveDrive.cancelPathfinding());
-    driver.x().toggleOnTrue(swerveDrive.goToClosestCoralTag(true));
-    driver.b().toggleOnTrue(swerveDrive.goToClosestCoralTag(false));
+    
+    driver.x().toggleOnTrue(Commands.sequence(swerveDrive.goToClosestCoralTag(true), elevator.goToLevel(4)));
+    driver.b().toggleOnTrue(Commands.sequence(swerveDrive.goToClosestCoralTag(false), elevator.goToLevel(4)));
 
     driver.a().toggleOnTrue(
       Commands.runOnce(()->{
