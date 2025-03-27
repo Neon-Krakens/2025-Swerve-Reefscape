@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Bot;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -38,7 +40,7 @@ public class IntakeArm extends SubsystemBase {
             () -> {},
             () -> {},
             interrupted -> {},
-            () -> hasCoral.get(), // Ends when at the target
+            () -> !hasCoral.get(), // Ends when at the target
             this
         );
     }
@@ -61,17 +63,35 @@ public class IntakeArm extends SubsystemBase {
 
     public void loadingPosition() {
         target = loadingPosition;
+        System.out.println("SETTING TO LOADING POSITION");
     }
 
     public void dropPosition() {
         target = dropPosition;
+        System.out.println("SETTING TO DROP POSITION");
     }
     
     double lastPosition = 0.0;
     long zeroedAt = 0L;
+    boolean lastHasCoral = false;
+    public boolean elevatorChanged = false;
+    
     @Override
     public void periodic() {
+        SmartDashboard.putBoolean("LIMIT HIT", !hasCoral.get());
         if(DriverStation.isDisabled()) return;
+
+        if(!hasCoral.get() && !lastHasCoral) {
+            lastHasCoral = true;
+            loadingPosition();
+            elevatorChanged = false;
+        }
+        
+        if(hasCoral.get() && elevatorChanged) {
+            lastHasCoral = false;
+            dropPosition();  
+        }
+        elevatorChanged = false;
 
         if (SmartDashboard.getBoolean("Zero Arm", false)) {
             if(zeroedAt == 0L) zeroedAt = System.currentTimeMillis();

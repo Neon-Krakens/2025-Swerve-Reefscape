@@ -42,7 +42,7 @@ public class RobotContainer {
 
   /** Xbox controller used for driver input. */
   private final CommandXboxController driver = new CommandXboxController(0);
-private final SendableChooser<String> autos = new SendableChooser<>();
+  private final SendableChooser<String> autos = new SendableChooser<>();
   /** Main drive subsystem for robot movement. */
   private final Swerve swerveDrive = Swerve.getInstance();
 
@@ -149,9 +149,8 @@ private final SendableChooser<String> autos = new SendableChooser<>();
     driver.start().onTrue(Commands.runOnce(swerveDrive::resetOdometry, swerveDrive));
 
     driver.y().toggleOnTrue(swerveDrive.cancelPathfinding());
-    
-    driver.x().toggleOnTrue(Commands.sequence(swerveDrive.goToClosestCoralTag(true), elevator.goToLevel(4)));
-    driver.b().toggleOnTrue(Commands.sequence(swerveDrive.goToClosestCoralTag(false), elevator.goToLevel(4)));
+    driver.x().toggleOnTrue(swerveDrive.goToClosestCoralTag(true));
+    driver.b().toggleOnTrue(swerveDrive.goToClosestCoralTag(false));
 
     driver.a().toggleOnTrue(
       Commands.runOnce(()->{
@@ -161,6 +160,7 @@ private final SendableChooser<String> autos = new SendableChooser<>();
         elevator.goDownLevel();
 
         algae.dropPosition();
+        algae.elevatorChanged = true;
       }, elevator)
     );
 
@@ -177,6 +177,7 @@ private final SendableChooser<String> autos = new SendableChooser<>();
 
     driver.rightBumper().toggleOnTrue(Commands.runOnce(()->{
         elevator.goUpLevel();
+        algae.elevatorChanged = true;
 
         if(elevator.getLevel() == 1) {
           algae.dropPosition();
