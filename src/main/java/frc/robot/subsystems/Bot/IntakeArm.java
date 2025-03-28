@@ -8,6 +8,11 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,10 +22,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class IntakeArm extends SubsystemBase {
     private final SparkMax stickMotor;
     private final DigitalInput hasCoral = new DigitalInput(0);
+    StructPublisher<Pose3d> publisher = NetworkTableInstance.getDefault().getStructTopic("3d IntakeArm", Pose3d.struct).publish();
 
     public IntakeArm() {
         stickMotor = new SparkMax(14, MotorType.kBrushless);
@@ -30,9 +37,9 @@ public class IntakeArm extends SubsystemBase {
         stickMotor.getEncoder().setPosition(0.0);
 
         SmartDashboard.putBoolean("Zero Arm", false);
+        SmartDashboard.putBoolean("Trigger Limit Switch", false);
     }
 
-    double speed = 0.0;
     double target = 0.0;
 
     public Command waitForCoral() {
@@ -43,12 +50,6 @@ public class IntakeArm extends SubsystemBase {
             () -> !hasCoral.get(), // Ends when at the target
             this
         );
-    }
-
-    public Command setSpeed(double speed) {
-        return Commands.run(() -> {
-            this.speed = speed;
-        });
     }
 
     public Command setPosition(double percent) {
@@ -79,22 +80,49 @@ public class IntakeArm extends SubsystemBase {
         elevatorChanged = true;
     }
     boolean elevatorChanged = false;
-    
+
+    @Override
+    public void simulationPeriodic() {
+        if (Robot.isSimulation()) {
+            double last = stickMotor.getEncoder().getPosition(); // -5
+
+            stickMotor.getEncoder().setPosition((target-last)/10);
+
+            if(target == loadingPosition) {
+                var pose3d = Swerve.getInstance().getPose3d().transformBy(new Transform3d(0, 0.3, Elevator.pose3d.getZ(), new Rotation3d(0,Math.toRadians(90),Math.toRadians(90))));
+                publisher.set(pose3d);
+            } else if(target == dropPosition) {
+                var pose3d = Swerve.getInstance().getPose3d().transformBy(new Transform3d(0, 0.3, Elevator.pose3d.getZ(), new Rotation3d(0,Math.toRadians(130),Math.toRadians(90))));
+                publisher.set(pose3d);
+            } else {
+                var pose3d = Swerve.getInstance().getPose3d().transformBy(new Transform3d(0, 0.3, Elevator.pose3d.getZ(), new Rotation3d(0,Math.toRadians(-90),Math.toRadians(90))));
+                publisher.set(pose3d);
+            }
+        }
+    }
+
+    boolean isLimitSwitchHit() {
+        if(Robot.isSimulation()) {
+            return SmartDashboard.getBoolean("Trigger Limit Switch", false);
+        }
+        return !hasCoral.get();
+    }
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("LIMIT HIT", !hasCoral.get());
+        SmartDashboard.putBoolean("LIMIT HIT", isLimitSwitchHit());
         if(DriverStation.isDisabled()) return;
 
-        if(!hasCoral.get() && !lastHasCoral) {
+        if(isLimitSwitchHit() && !lastHasCoral) {
             lastHasCoral = true;
             loadingPosition();
             elevatorChanged = false;
         }
         
-        if(hasCoral.get() && elevatorChanged) {
+        if(!isLimitSwitchHit() && elevatorChanged) {
             lastHasCoral = false;
-            dropPosition();  
+            dropPosition();
         }
+
         elevatorChanged = false;
 
         if (SmartDashboard.getBoolean("Zero Arm", false)) {
@@ -117,6 +145,9 @@ public class IntakeArm extends SubsystemBase {
         }
         
         var position = -stickMotor.getEncoder().getPosition();
+
+        SmartDashboard.putNumber("Arm Position", position);
+
         if(DriverStation.isEnabled() && !roundStarted) {
             roundStarted = true;
             dropPosition();

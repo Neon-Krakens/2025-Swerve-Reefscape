@@ -82,14 +82,14 @@ public class Elevator extends SubsystemBase {
         leftLift.set(speed);
     }
     StructPublisher<Pose3d> publisher = NetworkTableInstance.getDefault().getStructTopic("3d Elevator", Pose3d.struct).publish();
-
+    public static Pose3d pose3d = null;
     @Override
     public void simulationPeriodic() {
         
         if (Robot.isSimulation()) {
             double last = leftLift.getEncoder().getPosition(); // 0 to 660\
 
-            var pose3d = Swerve.getInstance().getPose3d().transformBy(new Transform3d(0.2, 0.3, 0.7+last/30.0, new Rotation3d(0,Math.toRadians(30),0)));
+            pose3d = Swerve.getInstance().getPose3d().transformBy(new Transform3d(0.2, 0.3, 0.7+last/30.0, new Rotation3d(0,Math.toRadians(30),0)));
 
             publisher.set(pose3d);
 
