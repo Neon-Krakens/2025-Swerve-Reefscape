@@ -74,7 +74,11 @@ public class IntakeArm extends SubsystemBase {
     double lastPosition = 0.0;
     long zeroedAt = 0L;
     boolean lastHasCoral = false;
-    public boolean elevatorChanged = false;
+
+    public void setElevatorChanged() {
+        elevatorChanged = true;
+    }
+    boolean elevatorChanged = false;
     
     @Override
     public void periodic() {

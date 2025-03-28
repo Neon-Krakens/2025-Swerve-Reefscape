@@ -22,7 +22,9 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -440,6 +442,24 @@ public class Swerve extends SubsystemBase {
      */
     public Pose2d getPose() {
         return swerveDrive.getPose();
+    }
+
+    /**
+     * Retrieves the current estimated pose of the robot on the field.
+     * 
+     * @return the current Pose2d representing the robot's position and rotation
+     */
+    public Pose3d getPose3d() {
+        Pose2d pose2d = swerveDrive.getPose();
+        // Convert to Pose3d (setting z = 0 and using Rotation3d)
+        Pose3d pose3d = new Pose3d(
+            pose2d.getX(),
+            pose2d.getY(),
+            0.0, // Default z height
+            new Rotation3d(0.0, 0.0, pose2d.getRotation().getRadians()) // Convert Rotation2d to Rotation3d
+        );
+
+        return pose3d;
     }
 
     /**

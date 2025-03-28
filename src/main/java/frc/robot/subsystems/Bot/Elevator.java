@@ -4,17 +4,19 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Robot;
 
 public class Elevator extends SubsystemBase {
@@ -24,28 +26,16 @@ public class Elevator extends SubsystemBase {
     private final SparkMax rightLift;
     private final SparkMax leftLift;
 
-    // private final DigitalInput limitSwitchBottom = new DigitalInput(Constants.ELEVATOR_LIMITSWITCH_CHANNEL_BOTTOM);
-    // private final DigitalInput limitSwitchTop = new DigitalInput(Constants.ELEVATOR_LIMITSWITCH_CHANNEL_TOP);
-
     private final SparkMaxConfig rightConfig;
 
     public Elevator() {
         rightLift = new SparkMax(9, MotorType.kBrushless);
         leftLift = new SparkMax(10, MotorType.kBrushless);
 
-        // Setup configuration for the left motor
-
-        // leftLift.setInverted(true);
-
         rightConfig = new SparkMaxConfig();
         rightConfig.follow(leftLift, true);
-        // rightConfig.idleMode(IdleMode.kBrake);
         rightLift.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // var leftConfig = new SparkMaxConfig();
-        // leftConfig.idleMode(IdleMode.kBrake);
-        // leftLift.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        
         SmartDashboard.putBoolean("Reset Elevator", false);
     }
     
@@ -89,19 +79,25 @@ public class Elevator extends SubsystemBase {
         if(speed < 0.2 && targetLevel == 4) speed = 0.2;
 
         liftSpeed = -speed;
-        System.out.println("SETTING LIFT SPEED: "+speed);
         leftLift.set(speed);
     }
+    StructPublisher<Pose3d> publisher = NetworkTableInstance.getDefault().getStructTopic("3d Elevator", Pose3d.struct).publish();
 
     @Override
     public void simulationPeriodic() {
+        
         if (Robot.isSimulation()) {
             double last = leftLift.getEncoder().getPosition(); // 0 to 660\
-            if(Math.abs(target - last) < 10) {
+
+            var pose3d = Swerve.getInstance().getPose3d().transformBy(new Transform3d(0.2, 0.3, 0.7+last/30.0, new Rotation3d(0,Math.toRadians(30),0)));
+
+            publisher.set(pose3d);
+
+            if(Math.abs(target - last) < 1) {
                 atTarget = true;
                 return;
             }
-            leftLift.getEncoder().setPosition(last+-liftSpeed*30);
+            leftLift.getEncoder().setPosition(last+-liftSpeed*10);
         }
     }
 

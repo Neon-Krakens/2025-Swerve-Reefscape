@@ -160,7 +160,7 @@ public class RobotContainer {
         elevator.goDownLevel();
 
         algae.dropPosition();
-        algae.elevatorChanged = true;
+        algae.setElevatorChanged();
       }, elevator)
     );
 
@@ -177,7 +177,7 @@ public class RobotContainer {
 
     driver.rightBumper().toggleOnTrue(Commands.runOnce(()->{
         elevator.goUpLevel();
-        algae.elevatorChanged = true;
+        algae.setElevatorChanged();
 
         if(elevator.getLevel() == 1) {
           algae.dropPosition();
