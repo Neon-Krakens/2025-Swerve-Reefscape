@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 5.624887297653422,
-        "y": 3.177121439200492
+        "x": 5.284943181818181,
+        "y": 3.034963474025974
       },
       "prevControl": {
-        "x": 6.0609607501692615,
-        "y": 2.45991948950958
+        "x": 5.704627197665083,
+        "y": 2.3080494354545986
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef Post 3R"
+      "linkedName": "Reef Post 3L"
     }
   ],
   "rotationTargets": [
