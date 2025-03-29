@@ -199,7 +199,15 @@ public class RobotContainer {
       }, elevator)
     );
     
-    driver.rightTrigger().whileTrue(coral.spinForward()).whileFalse(coral.spinStop());
+    driver.rightTrigger()
+      .whileTrue(coral.spinForward())
+      .onFalse(coral.spinStop());
+    driver.leftTrigger()
+      .whileTrue(coral.spinReverse())
+      .onFalse(coral.spinStop());
+
+    
+
     // driver.leftTrigger(0.0).whileTrue(
     //   Commands.run(()->{
     //     algae.setPosition(driver.getLeftTriggerAxis());

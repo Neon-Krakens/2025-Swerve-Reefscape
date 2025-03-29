@@ -48,17 +48,20 @@ public class Coral extends SubsystemBase {
         return Commands.runOnce(() -> {
             double wheelSpeed = 0.3;
             wheelMotor.set(-wheelSpeed);
+            System.out.println("Coral Forward Started at speed: " + wheelSpeed);
         });
     }
 
     public Command spinStop() {
         return Commands.runOnce(() -> {
             wheelMotor.set(0.0);
+            System.out.println("Coral Stopped");
         });
     }
 
     @Override
     public void periodic() {
+
         // wheelMotor.set(0.0);
     }
 
