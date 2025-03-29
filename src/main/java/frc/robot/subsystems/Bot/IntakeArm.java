@@ -47,7 +47,7 @@ public class IntakeArm extends SubsystemBase {
             () -> {},
             () -> {},
             interrupted -> {},
-            () -> !hasCoral.get(), // Ends when at the target
+            () -> isLimitSwitchHit(), // Ends when at the target
             this
         );
     }
