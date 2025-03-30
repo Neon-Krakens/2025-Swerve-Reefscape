@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Set Elevator 4"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Middle to 4L"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Elevator 4"
           }
         },
         {
