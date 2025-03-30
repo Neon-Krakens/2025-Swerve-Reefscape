@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.732266221549414,
-        "y": 6.599364960068183
+        "x": 4.529951298701299,
+        "y": 6.774310064935064
       },
       "isLocked": false,
       "linkedName": "Reef Post 5L"
@@ -20,8 +20,8 @@
         "y": 7.036595394736842
       },
       "prevControl": {
-        "x": 3.267934990385882,
-        "y": 5.379704321490767
+        "x": 2.934496753246753,
+        "y": 5.2144683441558435
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,7 +32,7 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.9040590405904054,
+      "minWaypointRelativePos": 0.9311193111931121,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 0.5,

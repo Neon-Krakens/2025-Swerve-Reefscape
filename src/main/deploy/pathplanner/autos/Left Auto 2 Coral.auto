@@ -5,15 +5,35 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "C1 to 5L"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Set Elevator 4"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "C1 to 5L"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.2
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Set Elevator 4"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
@@ -23,15 +43,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Set Elevator 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "5L to CS1"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "5L to CS1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Set Elevator 1"
+                }
+              }
+            ]
           }
         },
         {
@@ -41,15 +68,35 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "CS1 to 6R"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Set Elevator 4"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "CS1 to 6R"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Set Elevator 4"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {

@@ -97,7 +97,7 @@ public class Elevator extends SubsystemBase {
                 atTarget = true;
                 return;
             }
-            leftLift.getEncoder().setPosition(last+-liftSpeed*10);
+            leftLift.getEncoder().setPosition(last+-liftSpeed*5);
         }
     }
 

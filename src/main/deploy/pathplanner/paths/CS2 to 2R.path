@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1720034246575342,
-        "y": 1.0574272260273971
+        "x": 1.1467329545454545,
+        "y": 1.0192775974025972
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0652397260273974,
-        "y": 1.2076840753424654
+        "x": 3.0399692559153175,
+        "y": 1.1695344467176654
       },
       "isLocked": false,
       "linkedName": "Coral Station 2"
     },
     {
       "anchor": {
-        "x": 4.321784925981213,
-        "y": 2.6229341581912546
+        "x": 4.020609738487733,
+        "y": 2.7909652930563356
       },
       "prevControl": {
-        "x": 3.98502505756016,
-        "y": 2.1322269213491496
+        "x": 3.6838498700666804,
+        "y": 2.30025805621423
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef Post 2R"
+      "linkedName": "Reef Post 2L"
     }
   ],
   "rotationTargets": [
@@ -37,7 +37,7 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.5793357933579338,
+      "minWaypointRelativePos": 0.6223862238622382,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 0.5,
@@ -69,5 +69,5 @@
     "velocity": 0,
     "rotation": 144.09881895814502
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
