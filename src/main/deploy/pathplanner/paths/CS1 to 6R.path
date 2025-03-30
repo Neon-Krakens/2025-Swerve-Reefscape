@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.112560876623623,
-        "y": 6.261485389612781
+        "x": 2.8621748408564804,
+        "y": 6.328194444444445
       },
       "isLocked": false,
       "linkedName": "Coral Station 1"
     },
     {
       "anchor": {
-        "x": 3.681766379062346,
-        "y": 5.020155353545094
+        "x": 3.3327464788732386,
+        "y": 4.861179577464788
       },
       "prevControl": {
-        "x": 3.4457415384245387,
-        "y": 5.428962369378123
+        "x": 3.38292300872124,
+        "y": 5.106092451467795
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef Post 6L"
+      "linkedName": "Reef Post 6R"
     }
   ],
   "rotationTargets": [
@@ -50,10 +50,33 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Wrist Out",
+      "waypointRelativePos": 0.13979443521594684,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "SetWristSafePosition"
+        }
+      }
+    },
+    {
+      "name": "Scoring Postion",
+      "waypointRelativePos": 0.5728813559322041,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "WE-L4"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -61,7 +84,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -60.61762504553408
+    "rotation": -59.99999999999999
   },
   "reversed": false,
   "folder": null,
@@ -69,5 +92,5 @@
     "velocity": 0,
     "rotation": 35.60155183105559
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
