@@ -68,7 +68,7 @@ public class Coral extends SubsystemBase {
     public Command spinReverse() {
         return Commands.runOnce(() -> {
             double wheelSpeed = -0.3;
-            wheelMotor.set(wheelSpeed);
+            wheelMotor.set(-wheelSpeed);
             System.out.println("Coral Reverse Started at speed: " + wheelSpeed);
         });
     }
