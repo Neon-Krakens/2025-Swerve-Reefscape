@@ -39,7 +39,7 @@ public class LightSubsystem extends SubsystemBase {
         m_led = new AddressableLED(0);
 
         // Reuse buffer
-        m_ledBuffer = new AddressableLEDBuffer(270);
+        m_ledBuffer = new AddressableLEDBuffer(267);
         m_led.setLength(m_ledBuffer.getLength());
 
 
