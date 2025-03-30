@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.529951298701299,
-        "y": 6.774310064935064
+        "x": 4.9430600649350644,
+        "y": 7.109070616883116
       },
       "isLocked": false,
       "linkedName": "Reef Post 5L"
@@ -20,19 +20,24 @@
         "y": 7.036595394736842
       },
       "prevControl": {
-        "x": 2.934496753246753,
-        "y": 5.2144683441558435
+        "x": 2.7350649350649343,
+        "y": 5.356919642857142
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Coral Station 1"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7769058295964115,
+      "rotationDegrees": 35.0
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.9311193111931121,
+      "minWaypointRelativePos": 0.9065190651906516,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 0.5,
@@ -45,44 +50,10 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Wrist Out",
-      "waypointRelativePos": 0.011705772425249167,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "SetWristSafePosition"
-        }
-      }
-    },
-    {
-      "name": "Zero Elevator",
-      "waypointRelativePos": 0.1627118644067797,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "E-Zero"
-        }
-      }
-    },
-    {
-      "name": "Run Coral Intake",
-      "waypointRelativePos": 0.5439939784053158,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "WE-CoralIntake"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -98,5 +69,5 @@
     "velocity": 0,
     "rotation": -119.99999999999999
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
