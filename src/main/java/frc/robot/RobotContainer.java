@@ -183,18 +183,6 @@ public class RobotContainer {
           algae.dropPosition();
         } else {
           algae.loadingPosition();
-          if(elevator.getLevel() == 2) {
-            // coral.lockInCoral();
-            
-            CommandScheduler.getInstance().schedule(
-              Commands.sequence(
-                Commands.waitSeconds(0.5),
-                coral.spinForward(),
-                Commands.waitSeconds(0.3),
-                coral.spinStop()
-              )
-            );
-          }
         }
       }, elevator)
     );
@@ -232,14 +220,10 @@ public class RobotContainer {
     String selectedAuto = autos.getSelected();
 
     switch (selectedAuto) {
-      case "LEFT1":
-        return new PathPlannerAuto("Left Auto 1 Coral");
       case "LEFT2":
         return new PathPlannerAuto("Left Auto 2 Coral");
       case "MID":
         return new PathPlannerAuto("Mid Auto");
-      case "RIGHT1":
-        return new PathPlannerAuto("Right Auto 1 Coral");
       case "RIGHT2":
         return new PathPlannerAuto("Right Auto 2 Coral");
       default:
