@@ -5,15 +5,35 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "C1 to 5L"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Set Elevator 4"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "C1 to 5L"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.2
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Set Elevator 4"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
@@ -45,6 +65,12 @@
           "type": "named",
           "data": {
             "name": "Wait For Coral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lock Coral"
           }
         },
         {
@@ -83,12 +109,6 @@
           "type": "named",
           "data": {
             "name": "Shoot Coral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Set Elevator 1"
           }
         }
       ]

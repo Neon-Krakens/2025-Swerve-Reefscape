@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1834703947368421,
-        "y": 7.036595394736842
+        "x": 1.3461647727305932,
+        "y": 7.123315746755269
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8621748408564804,
-        "y": 6.328194444444445
+        "x": 1.7161950905213867,
+        "y": 6.754704096508542
       },
       "isLocked": false,
       "linkedName": "Coral Station 1"
     },
     {
       "anchor": {
-        "x": 3.3327464788732386,
-        "y": 4.861179577464788
+        "x": 2.977156149501688,
+        "y": 5.628509978596364
       },
       "prevControl": {
-        "x": 3.38292300872124,
-        "y": 5.106092451467795
+        "x": 2.2487610314876227,
+        "y": 6.890127330981853
+      },
+      "nextControl": {
+        "x": 3.238191247988664,
+        "y": 5.176383925458176
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.4057007774067567,
+        "y": 4.8641644113906715
+      },
+      "prevControl": {
+        "x": 3.0921150246557723,
+        "y": 5.4073108676851085
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,17 +46,17 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.38442639802631573,
+      "waypointRelativePos": 0.8960138648180228,
       "rotationDegrees": -59.99999999999999
     }
   ],
   "constraintZones": [
     {
       "name": "Slow Place",
-      "minWaypointRelativePos": 0.5977859778597782,
-      "maxWaypointRelativePos": 1.0,
+      "minWaypointRelativePos": 1.2018604651162785,
+      "maxWaypointRelativePos": 2.0,
       "constraints": {
-        "maxVelocity": 0.4,
+        "maxVelocity": 0.3,
         "maxAcceleration": 3.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -75,8 +91,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -92,5 +108,5 @@
     "velocity": 0,
     "rotation": 35.60155183105559
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
