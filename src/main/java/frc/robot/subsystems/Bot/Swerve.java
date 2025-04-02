@@ -373,7 +373,12 @@ public class Swerve extends SubsystemBase {
         }); // Adjust time as needed
     }
 
-    
+    public Command scootBackward() {
+        return runOnce(() -> {
+            swerveDrive.drive(new Translation2d(-0.5, 0.0), 0, false, false);
+        }); // Adjust time as needed
+    }
+
 
     /**
      * Setup the photon vision class.

@@ -118,6 +118,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Set Elevator 1", elevator.goToLevel(1));
 
     NamedCommands.registerCommand("Wait For Coral", algae.waitForCoral());
+    NamedCommands.registerCommand("Move Back", swerveDrive.scootBackward());
 
   
     NamedCommands.registerCommand("Shoot Coral", coral.spinWheelSequence());

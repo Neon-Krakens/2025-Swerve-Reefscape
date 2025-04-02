@@ -25,6 +25,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Move Back"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Set Elevator 1"
           }
         }

@@ -44,7 +44,6 @@ public class LightSubsystem extends SubsystemBase {
 
 
         // Set the data
-
         m_led.setData(m_ledBuffer);
         m_led.start();
     }
