@@ -66,20 +66,32 @@ public class Elevator extends SubsystemBase {
         double distance = target - position;
 
         if (Math.abs(distance) < 0.5) {
-            if(target==0) leftLift.set(0.02);
-            else leftLift.set(0.04);
+            if(target==0) leftLift.set(0.01); // Idle when at bottom
+            else {
+                leftLift.set(0.05); // Idle speed
+            }
             atTarget = true;
             return;
         }
         atTarget = false;
 
-        double speed = Math.max(Math.min(distance / 38.0, 0.3), -0.2);
-        if (speed < 0 && speed > -0.05) speed = -0.05; // Min speed when going dowb
-        if (speed > 0 && speed < 0.1) speed = 0.1;  // Min speed when going up
-        if(speed < 0.2 && targetLevel == 4) speed = 0.2;
+        // New Control
+        if(target < position) {
+            leftLift.set(-0.3); // Going up
+            return;
+        }
+        if(target > position) {
+            leftLift.set(0.3); // Going down
+            return;
+        }
 
-        liftSpeed = -speed;
-        leftLift.set(speed);
+        // double speed = Math.max(Math.min(distance / 38.0, 0.3), -0.2);
+        // if (speed < 0 && speed > -0.05) speed = -0.05; // Min speed when going dowb
+        // if (speed > 0 && speed < 0.1) speed = 0.1;  // Min speed when going up
+        // if(speed < 0.2 && targetLevel == 4) speed = 0.2; // Min speed when going up to top
+
+        // liftSpeed = -speed;
+        // leftLift.set(speed);
     }
     StructPublisher<Pose3d> publisher = NetworkTableInstance.getDefault().getStructTopic("3d Elevator", Pose3d.struct).publish();
     public static Pose3d pose3d = null;
