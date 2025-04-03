@@ -65,7 +65,7 @@ public class Elevator extends SubsystemBase {
         // Stop movement when near target
         double distance = target - position;
 
-        if (Math.abs(distance) < 0.5) {
+        if (Math.abs(distance) < 1) {
             if(target==0) leftLift.set(0.01); // Idle when at bottom
             else {
                 leftLift.set(0.05); // Idle speed
@@ -77,11 +77,15 @@ public class Elevator extends SubsystemBase {
 
         // New Control
         if(target < position) {
-            leftLift.set(-0.3); // Going up
+            leftLift.set(-0.3); // Going down
             return;
         }
         if(target > position) {
-            leftLift.set(0.3); // Going down
+            if(targetLevel==2) {
+                leftLift.set(0.1); // Going up
+            } else {
+                leftLift.set(0.3); // Going up
+            }
             return;
         }
 
