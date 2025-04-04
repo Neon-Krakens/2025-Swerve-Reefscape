@@ -6,10 +6,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -28,28 +26,17 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.commands.DriveToPath;
 import frc.robot.subsystems.Vision.Vision.Cameras;
 import swervelib.SwerveDrive;
-import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveMath;
 
 import org.json.simple.parser.ParseException;
-import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
@@ -143,10 +130,18 @@ public class Swerve extends SubsystemBase {
             setupPhotonVision();
             // Stop the odometry thread if we are using vision that way we can synchronize
             // updates better.
-            swerveDrive.stopOdometryThread();
+            // swerveDrive.stopOdometryThread();
         }
         setupPathPlanner();
         loadPaths();
+    }
+
+    public void reduceSpeed() {
+        swerveDrive.setMaximumAllowableSpeeds(Constants.MAX_SPEED.in(MetersPerSecond)/3.0, Constants.MAX_ANGULAR_VELOCITY/3.0);
+    }
+
+    public void fullSpeed() {
+        swerveDrive.setMaximumAllowableSpeeds(Constants.MAX_SPEED.in(MetersPerSecond), Constants.MAX_ANGULAR_VELOCITY);
     }
 
      // Path Planning Paths

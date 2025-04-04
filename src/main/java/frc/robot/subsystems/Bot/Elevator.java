@@ -82,7 +82,7 @@ public class Elevator extends SubsystemBase {
         }
         if(target > position) {
             if(targetLevel==2) {
-                leftLift.set(0.1); // Going up
+                leftLift.set(0.2); // Going up
             } else {
                 leftLift.set(0.3); // Going up
             }
@@ -126,7 +126,7 @@ public class Elevator extends SubsystemBase {
                 // if(targetLevel == 3) target = 295;
                 // if(targetLevel == 4) target = 600;
                 
-                if(targetLevel == 2) target = 2.3;//2.3
+                if(targetLevel == 2) target = 3.0;//2.3
                 if(targetLevel == 3) target = 16.5;//16.5
                 if(targetLevel == 4) target = 37.5;//38.5
                 atTarget = false;

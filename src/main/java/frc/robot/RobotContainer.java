@@ -162,6 +162,7 @@ public class RobotContainer {
 
         algae.dropPosition();
         algae.setElevatorChanged();
+        swerveDrive.fullSpeed();
       }, elevator)
     );
 
@@ -171,8 +172,15 @@ public class RobotContainer {
         if(elevator.getLevel() == 1) {
           algae.dropPosition();
           algae.setElevatorChanged();
+          swerveDrive.fullSpeed();
         } else {
           algae.loadingPosition();
+        }
+        
+        if(elevator.getLevel() > 2) {
+          swerveDrive.reduceSpeed();
+        } else {
+          swerveDrive.fullSpeed();
         }
       }, elevator)
     );
@@ -184,6 +192,12 @@ public class RobotContainer {
           algae.dropPosition();
         } else {
           algae.loadingPosition();
+        }
+
+        if(elevator.getLevel() > 2) {
+          swerveDrive.reduceSpeed();
+        } else {
+          swerveDrive.fullSpeed();
         }
       }, elevator)
     );
