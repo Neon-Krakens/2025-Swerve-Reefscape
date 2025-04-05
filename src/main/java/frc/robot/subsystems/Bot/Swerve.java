@@ -363,13 +363,13 @@ public class Swerve extends SubsystemBase {
 
     public Command scootLeft() {
         return run(() -> {
-            swerveDrive.drive(new Translation2d(0, 0.5), 0, false, false);
+            swerveDrive.drive(new Translation2d(0, 0.5 * (1.0/Elevator.getSpeedFactor())), 0, false, false);
         }); // Adjust time as needed
     }
 
     public Command scootRight() {
         return run(() -> {
-            swerveDrive.drive(new Translation2d(0, -0.5), 0, false, false);
+            swerveDrive.drive(new Translation2d(0, -0.5* (1.0/Elevator.getSpeedFactor())), 0, false, false);
         }); // Adjust time as needed
     }
 
