@@ -143,7 +143,7 @@ public class Swerve extends SubsystemBase {
             setupPhotonVision();
             // Stop the odometry thread if we are using vision that way we can synchronize
             // updates better.
-            swerveDrive.stopOdometryThread();
+            // swerveDrive.stopOdometryThread();
         }
         setupPathPlanner();
         loadPaths();
@@ -390,6 +390,9 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {
+        var factor = Elevator.getSpeedFactor(); // get the speed factor from elevator to adjust swerve speeds
+        swerveDrive.setMaximumAllowableSpeeds(Constants.MAX_SPEED.in(MetersPerSecond)*factor, Constants.MAX_ANGULAR_VELOCITY*factor);
+
         // if(SmartDashboard.getBoolean("Auto Align Left", false)) {
         //     SmartDashboard.putBoolean("Auto Align Left", false);
             

@@ -24,13 +24,12 @@ public class Elevator extends SubsystemBase {
     private int targetLevel = 1;
     private boolean atTarget = false;
     private final SparkMax rightLift;
-    private final SparkMax leftLift;
+    private final static SparkMax leftLift = new SparkMax(10, MotorType.kBrushless);
 
     private final SparkMaxConfig rightConfig;
 
     public Elevator() {
         rightLift = new SparkMax(9, MotorType.kBrushless);
-        leftLift = new SparkMax(10, MotorType.kBrushless);
 
         rightConfig = new SparkMaxConfig();
         rightConfig.follow(leftLift, true);
@@ -38,9 +37,20 @@ public class Elevator extends SubsystemBase {
 
         SmartDashboard.putBoolean("Reset Elevator", false);
     }
-    
+
     double liftSpeed = 0.0;
 
+    // Lift at 16.5 ->
+    public static double getSpeedFactor() {
+        double position = leftLift.getEncoder().getPosition();
+        if (position > 3) {
+            double a = position / 37.5;
+            double b = 1 - a;
+
+            return Math.max(Math.min(1.00, b), 0.33);
+        }
+        return 1;
+    }
 
     @Override
     public void periodic() {
@@ -56,7 +66,7 @@ public class Elevator extends SubsystemBase {
             SmartDashboard.putBoolean("Reset Elevator", false);
         }
 
-        if(DriverStation.isDisabled()) {
+        if (DriverStation.isDisabled()) {
             target = position;
             atTarget = true;
             return;
@@ -66,82 +76,93 @@ public class Elevator extends SubsystemBase {
         double distance = target - position;
 
         if (Math.abs(distance) < 1) {
-            if(target==0) leftLift.set(0.01); // Idle when at bottom
+            if (target == 0)
+                leftLift.set(0.01); // Idle when at bottom
             else {
                 leftLift.set(0.05); // Idle speed
             }
+            liftSpeed = 0.0;
             atTarget = true;
             return;
         }
         atTarget = false;
 
         // New Control
-        if(target < position) {
+        if (target < position) {
             leftLift.set(-0.3); // Going down
+            liftSpeed = 0.3;
             return;
         }
-        if(target > position) {
-            if(targetLevel==2) {
+        if (target > position) {
+            if (targetLevel == 2) {
                 leftLift.set(0.1); // Going up
+                liftSpeed = -0.1;
             } else {
                 leftLift.set(0.3); // Going up
+                liftSpeed = -0.3;
             }
             return;
         }
 
         // double speed = Math.max(Math.min(distance / 38.0, 0.3), -0.2);
         // if (speed < 0 && speed > -0.05) speed = -0.05; // Min speed when going dowb
-        // if (speed > 0 && speed < 0.1) speed = 0.1;  // Min speed when going up
-        // if(speed < 0.2 && targetLevel == 4) speed = 0.2; // Min speed when going up to top
+        // if (speed > 0 && speed < 0.1) speed = 0.1; // Min speed when going up
+        // if(speed < 0.2 && targetLevel == 4) speed = 0.2; // Min speed when going up
+        // to top
 
         // liftSpeed = -speed;
         // leftLift.set(speed);
     }
-    StructPublisher<Pose3d> publisher = NetworkTableInstance.getDefault().getStructTopic("3d Elevator", Pose3d.struct).publish();
+
+    StructPublisher<Pose3d> publisher = NetworkTableInstance.getDefault().getStructTopic("3d Elevator", Pose3d.struct)
+            .publish();
     public static Pose3d pose3d = null;
+
     @Override
     public void simulationPeriodic() {
-        
         if (Robot.isSimulation()) {
             double last = leftLift.getEncoder().getPosition(); // 0 to 660\
 
-            pose3d = Swerve.getInstance().getPose3d().transformBy(new Transform3d(0.2, 0.3, 0.7+last/30.0, new Rotation3d(0,Math.toRadians(30),0)));
+            pose3d = Swerve.getInstance().getPose3d().transformBy(new Transform3d(0.2, 0.3, 0.7 + last / 30.0, new Rotation3d(0, Math.toRadians(30), 0)));
 
             publisher.set(pose3d);
 
-            if(Math.abs(target - last) < 1) {
+            if (Math.abs(target - last) < 1) {
                 atTarget = true;
                 return;
             }
-            leftLift.getEncoder().setPosition(last+-liftSpeed*5);
+            leftLift.getEncoder().setPosition(last + -liftSpeed * 5);
         }
     }
 
     public Command setTargetLevel(int level) {
         return new FunctionalCommand(
-            () -> {
-                targetLevel = Math.max(1, Math.min(level, 4)); // Keep within bounds
-                if(targetLevel == 1) target = 0; // Not raised and bottom corla
-                // if(targetLevel == 2) target = 52;//2.3
-                // if(targetLevel == 3) target = 295;
-                // if(targetLevel == 4) target = 600;
-                
-                if(targetLevel == 2) target = 2.3;//2.3
-                if(targetLevel == 3) target = 16.5;//16.5
-                if(targetLevel == 4) target = 37.5;//38.5
-                atTarget = false;
-                System.out.println("Setting target level: " + targetLevel);
-            },
-            () -> {
-                
-            },
-            interrupted -> {
-                leftLift.set(0.0); // Stop the motor when the command ends
-                System.out.println("Reached target level: " + targetLevel);
-            },
-            () -> atTarget, // Ends when at the target
-            this
-        );
+                () -> {
+                    targetLevel = Math.max(1, Math.min(level, 4)); // Keep within bounds
+                    if (targetLevel == 1)
+                        target = 0; // Not raised and bottom corla
+                    // if(targetLevel == 2) target = 52;//2.3
+                    // if(targetLevel == 3) target = 295;
+                    // if(targetLevel == 4) target = 600;
+
+                    if (targetLevel == 2)
+                        target = 2.3;// 2.3
+                    if (targetLevel == 3)
+                        target = 16.5;// 16.5
+                    if (targetLevel == 4)
+                        target = 37.5;// 38.5
+                    atTarget = false;
+                    System.out.println("Setting target level: " + targetLevel);
+                },
+                () -> {
+
+                },
+                interrupted -> {
+                    leftLift.set(0.0); // Stop the motor when the command ends
+                    System.out.println("Reached target level: " + targetLevel);
+                },
+                () -> atTarget, // Ends when at the target
+                this);
     }
 
     public Command goToLevel(int level) {
@@ -155,6 +176,7 @@ public class Elevator extends SubsystemBase {
     public void goDownLevel() {
         CommandScheduler.getInstance().schedule(goToLevel(targetLevel - 1));
     }
+
     public int getLevel() {
         return targetLevel;
     }

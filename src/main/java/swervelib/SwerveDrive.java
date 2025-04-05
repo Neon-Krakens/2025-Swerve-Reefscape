@@ -659,7 +659,6 @@ public class SwerveDrive implements AutoCloseable
   {
     this.maxChassisSpeedMPS = maxTranslationalSpeedMetersPerSecond;
     this.swerveController.config.maxAngularVelocity = maxRotationalVelocityRadiansPerSecond;
-    System.out.println("Max ROTAION Speed: " + this.swerveController.config.maxAngularVelocity);
   }
 
   /**
