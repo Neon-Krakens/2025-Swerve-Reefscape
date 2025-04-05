@@ -43,8 +43,8 @@ public class Elevator extends SubsystemBase {
     // Lift at 16.5 ->
     public static double getSpeedFactor() {
         double position = leftLift.getEncoder().getPosition();
-        if (position > 3) {
-            double a = position / 37.5;
+        if (position > 5) {
+            double a = (position-5) / (37.5-5);
             double b = 1 - a;
 
             return Math.max(Math.min(1.00, b), 0.33);
@@ -145,7 +145,7 @@ public class Elevator extends SubsystemBase {
                 // if(targetLevel == 4) target = 600;
                 
                 if(targetLevel == 2) target = 4.5;//2.3
-                if(targetLevel == 3) target = 16.5;//16.5
+                if(targetLevel == 3) target = 17.5;//16.5
                 if(targetLevel == 4) target = 37.5;//38.5
                 atTarget = false;
                 System.out.println("Setting target level: " + targetLevel);

@@ -68,15 +68,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Lock Coral"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Lock Coral"
+                }
+              },
               {
                 "type": "path",
                 "data": {
@@ -87,18 +87,6 @@
                 "type": "sequential",
                 "data": {
                   "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Lock Coral"
-                      }
-                    },
                     {
                       "type": "wait",
                       "data": {
