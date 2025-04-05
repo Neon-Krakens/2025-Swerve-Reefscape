@@ -93,10 +93,10 @@ public class Elevator extends SubsystemBase {
             liftSpeed = 0.3;
             return;
         }
-        if (target > position) {
-            if (targetLevel == 2) {
-                leftLift.set(0.1); // Going up
-                liftSpeed = -0.1;
+        if(target > position) {
+            if(targetLevel==2) {
+                leftLift.set(0.2); // Going up
+                liftSpeed = -0.2; // Use a slower speed for 2nd level to avoid overshooting
             } else {
                 leftLift.set(0.3); // Going up
                 liftSpeed = -0.3;
@@ -137,32 +137,29 @@ public class Elevator extends SubsystemBase {
 
     public Command setTargetLevel(int level) {
         return new FunctionalCommand(
-                () -> {
-                    targetLevel = Math.max(1, Math.min(level, 4)); // Keep within bounds
-                    if (targetLevel == 1)
-                        target = 0; // Not raised and bottom corla
-                    // if(targetLevel == 2) target = 52;//2.3
-                    // if(targetLevel == 3) target = 295;
-                    // if(targetLevel == 4) target = 600;
-
-                    if (targetLevel == 2)
-                        target = 2.3;// 2.3
-                    if (targetLevel == 3)
-                        target = 16.5;// 16.5
-                    if (targetLevel == 4)
-                        target = 37.5;// 38.5
-                    atTarget = false;
-                    System.out.println("Setting target level: " + targetLevel);
-                },
-                () -> {
-
-                },
-                interrupted -> {
-                    leftLift.set(0.0); // Stop the motor when the command ends
-                    System.out.println("Reached target level: " + targetLevel);
-                },
-                () -> atTarget, // Ends when at the target
-                this);
+            () -> {
+                targetLevel = Math.max(1, Math.min(level, 4)); // Keep within bounds
+                if(targetLevel == 1) target = 0; // Not raised and bottom corla
+                // if(targetLevel == 2) target = 52;//2.3
+                // if(targetLevel == 3) target = 295;
+                // if(targetLevel == 4) target = 600;
+                
+                if(targetLevel == 2) target = 2.3;//2.3
+                if(targetLevel == 3) target = 16.5;//16.5
+                if(targetLevel == 4) target = 37.5;//38.5
+                atTarget = false;
+                System.out.println("Setting target level: " + targetLevel);
+            },
+            () -> {
+                
+            },
+            interrupted -> {
+                leftLift.set(0.0); // Stop the motor when the command ends
+                System.out.println("Reached target level: " + targetLevel);
+            },
+            () -> atTarget, // Ends when at the target
+            this
+        );
     }
 
     public Command goToLevel(int level) {
