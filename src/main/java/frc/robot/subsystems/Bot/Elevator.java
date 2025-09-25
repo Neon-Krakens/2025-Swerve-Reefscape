@@ -89,17 +89,17 @@ public class Elevator extends SubsystemBase {
 
         // New Control
         if (target < position) {
-            leftLift.set(-0.3); // Going down
-            liftSpeed = 0.3;
+            leftLift.set(-0.3/2.0); // Going down
+            liftSpeed = 0.3/2.0;
             return;
         }
         if(target > position) {
             if(targetLevel==2) {
-                leftLift.set(0.2); // Going up
-                liftSpeed = -0.2; // Use a slower speed for 2nd level to avoid overshooting
+                leftLift.set(0.2/2.0); // Going up
+                liftSpeed = -0.2/2.0; // Use a slower speed for 2nd level to avoid overshooting
             } else {
-                leftLift.set(0.3); // Going up
-                liftSpeed = -0.3;
+                leftLift.set(0.3/2.0); // Going up
+                liftSpeed = -0.3/2.0;
             }
             return;
         }
