@@ -89,17 +89,17 @@ public class Elevator extends SubsystemBase {
 
         // New Control
         if (target < position) {
-            leftLift.set(-0.3/2.0); // Going down
-            liftSpeed = 0.3/2.0;
+            leftLift.set(-0.3); // Going down
+            liftSpeed = 0.3;
             return;
         }
         if(target > position) {
             if(targetLevel==2) {
-                leftLift.set(0.2/2.0); // Going up
-                liftSpeed = -0.2/2.0; // Use a slower speed for 2nd level to avoid overshooting
+                leftLift.set(0.2); // Going up
+                liftSpeed = -0.2; // Use a slower speed for 2nd level to avoid overshooting
             } else {
-                leftLift.set(0.3/2.0); // Going up
-                liftSpeed = -0.3/2.0;
+                leftLift.set(0.3); // Going up
+                liftSpeed = -0.3;
             }
             return;
         }
@@ -144,9 +144,9 @@ public class Elevator extends SubsystemBase {
                 // if(targetLevel == 3) target = 295;
                 // if(targetLevel == 4) target = 600;
                 
-                if(targetLevel == 2) target = 4.5;//2.3
-                if(targetLevel == 3) target = 17.5;//16.5
-                if(targetLevel == 4) target = 37.5;//38.5
+                if(targetLevel == 2) target = 4.5;
+                if(targetLevel == 3) target = 17.5;
+                if(targetLevel == 4) target = 38.5;
                 atTarget = false;
                 System.out.println("Setting target level: " + targetLevel);
             },
